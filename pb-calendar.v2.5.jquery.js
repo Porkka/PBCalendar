@@ -540,6 +540,15 @@
                     }
                 }, 200);
             });
+/*** MISC EVENTS ***/
+            plugin.$element.on('mouseleave' + '.' + plugin._name, function(e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                if(plugin.active_actions.entry_moving || plugin.active_actions.resizing) {
+                    plugin.revertEntryChanges();
+                }
+                plugin.resetSelections();
+            });
             $('.pb-calendar a.prev').on('click' + '.' + plugin._name, function(e) {
                 e.preventDefault();
                 if(plugin.options.calendar_type == 'week') {
