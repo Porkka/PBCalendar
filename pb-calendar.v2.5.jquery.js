@@ -77,9 +77,12 @@
             }
         },
         hour_interval: '00:60:00',
-        onEntryRender: function() {            // What to send with upload as FormData
-            return '';
-        }
+        onEntryResizeConfirm: function() {
+            return confirm('Are you sure you want to change this entrie\'s length?');
+        },
+        onEntryMoveConfirm: function() { // Must return boolean
+            return confirm('Are you sure you want to change this entrie\'s position?');
+        },
     };
 
 
@@ -395,12 +398,17 @@
 
                 // Check for other actions
                 if(plugin.active_actions.entry_moving) {
-                    plugin.doEntryMove( plugin.getElementFromMousePosition(e.cleintX, e.clientY, $(this)) );
-                    if(!confirm('Are you sure you want to change this entrie\'s position?')) {
+                    if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
+                    } else {
+                        plugin._triggerEntryMoved();
                     }
                 } else if(plugin.active_actions.resizing) {
-                    plugin._triggerEntryResized();
+                    if(!plugin.options.onEntryResizeConfirm()) {
+                        plugin.revertEntryChanges();
+                    } else {
+                        plugin._triggerEntryResized();
+                    }
                 }
 
                 plugin.resetSelections();
@@ -454,8 +462,7 @@
 
                 // Check for other actions
                 if(plugin.active_actions.entry_moving) {
-                    plugin.doEntryMove($(this));
-                    if(!confirm('Are you sure you want to change this entrie\'s position?')) {
+                    if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
                         plugin._triggerEntryMoved();
@@ -463,7 +470,7 @@
                     plugin.resetSelections();
                     return;
                 } else if(plugin.active_actions.resizing) {
-                    if(!confirm('Are you sure you want to change this entrie\'s length?')) {
+                    if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
                         plugin._triggerEntryResized();
