@@ -67,6 +67,22 @@ $(function() {
 			 },
 			 {
 				title: '0000',
+				start: '2016-11-14 09:30',
+				end: '2016-11-14 10:50',
+				styles: {
+					background: 'red',
+				}
+			 },
+			 {
+				title: '0000',
+				start: '2016-11-21 09:30',
+				end: '2016-11-21 10:50',
+				styles: {
+					background: '#323232',
+				}
+			 },
+			 {
+				title: '0000',
 				start: '2016-11-21 08:30',
 				end: '2016-11-30 09:30',
 				styles: {
@@ -74,6 +90,14 @@ $(function() {
 				}
 			},
         ]
+	});
+
+
+	$('#calendar').on('onEntryResized', function(e, entry, plugin) {
+		console.log('Resized: ', e, entry, plugin);
+	});
+	$('#calendar').on('onEntryMoved', function(e, entry, plugin) {
+		console.log('Moved: ', e, entry, plugin);
 	});
 
 });

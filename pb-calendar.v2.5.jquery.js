@@ -78,10 +78,10 @@
         },
         hour_interval: '00:60:00',
         onEntryResizeConfirm: function() {
-            return confirm('Are you sure you want to change this entrie\'s length?');
+            return confirm('Are you sure you want to change this entry\'s length?');
         },
         onEntryMoveConfirm: function() { // Must return boolean
-            return confirm('Are you sure you want to change this entrie\'s position?');
+            return confirm('Are you sure you want to change this entry\'s position?');
         },
     };
 
@@ -401,10 +401,12 @@
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
+                        plugin.renderNormal();
                         plugin._triggerEntryMoved();
                     }
                 } else if(plugin.active_actions.resizing) {
                     if(!plugin.options.onEntryResizeConfirm()) {
+                        plugin.renderNormal();
                         plugin.revertEntryChanges();
                     } else {
                         plugin._triggerEntryResized();
@@ -465,6 +467,7 @@
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
+                        plugin.renderNormal();
                         plugin._triggerEntryMoved();
                     }
                     plugin.resetSelections();
@@ -473,6 +476,7 @@
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
+                        plugin.renderNormal();
                         plugin._triggerEntryResized();
                     }
                     plugin.resetSelections();
@@ -496,6 +500,7 @@
                     start = end;
                     end = tmp; 
                 }
+
                 var trigger = [ { start: moment(start), end: moment(end) }, plugin.selections, plugin ];
                 plugin.$element.trigger('onRangeSelected', trigger);
 
@@ -584,15 +589,11 @@
 /*** TRIGGERS ***/
         _triggerEntryMoved: function() {
             var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
-            var trigger = { entry: entry, plugin: this };
-            console.log('onEntryMoved', trigger);
-            this.$element.trigger('onEntryMoved', trigger);
+            this.$element.trigger('onEntryMoved', [ entry, this ]);
         },
         _triggerEntryResized: function() {
             var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
-            var trigger = { entry: entry, plugin: this };
-            console.log('onEntryResized', trigger);
-            this.$element.trigger('onEntryResized', trigger);
+            this.$element.trigger('onEntryResized', [ entry, this ]);
         },
 
         getElementFromMousePosition: function(x, y, $obscuring_element) {
@@ -639,9 +640,21 @@
 
             var guid = this.selections.entry.attr('data-guid');
             var entry = this.clone( this.getEntryByGUID(guid) );
-            entry.start = this._longFormat(moment(start*1000));
-            entry.end = this._longFormat(moment(end*1000));
 
+            var moment_start = moment(start*1000);
+            var moment_end = moment(end*1000);
+
+            var old_start = moment(entry.start);
+            var old_end = moment(entry.end);
+
+            if(this.options.calendar_type == 'month') {
+                moment_start.hours(old_start.hours());
+                moment_end.hours(old_end.hours());
+            }
+
+            entry.start = this._longFormat(moment_start);
+            entry.end = this._longFormat(moment_end);
+            entry.most_top = 1;
 
             var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
             $associates.remove();
@@ -651,6 +664,7 @@
             if($rendered_entries) {
                 var $entry = $rendered_entries[0];
                 this.selections.entry = $entry;
+                delete entry.most_top;
                 this.replaceEntryByGUID(guid, entry);
             }
 
@@ -680,8 +694,17 @@
             } else if(old_start.format('x') < start.format('x')) {
                 end.add(diff, 'days');
             }
+            var old_start = moment(entry.start);
+            var old_end = moment(entry.end);
+
+            if(this.options.calendar_type == 'month') {
+                start.hours(old_start.hours());
+                end.hours(old_end.hours());
+            }
+
             entry.start = this._longFormat(start);
             entry.end = this._longFormat(end);
+            entry.most_top = 1;
 
             var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
             $associates.remove();
@@ -689,6 +712,7 @@
             if($rendered_entries) {
                 var $entry = $rendered_entries[0];
                 this.selections.entry = $entry;
+                delete entry.most_top;
                 this.replaceEntryByGUID(guid, entry);
             }
 
@@ -873,6 +897,9 @@
             // Contains all the calendar's entries
             var $container = this.$element;
 
+            this.$element.find('.pb-skeleton .entry').remove();
+            this.$element.find('.pb-skeleton .pb-read-more').remove();
+
             if(this.options.calendar_type != 'month') {
                 for(var ent in entries) {
 
@@ -980,11 +1007,12 @@
                 if(entry.has_resizer) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
-                if($overlapping_entries.length >= 3) {
+                if($overlapping_entries.length >= 3 && !entry.most_top) {
                     plugin.appendToReadMore($entry, $first_slot);
                 } else {
+                    var top = !entry.most_top ? 24 * ($overlapping_entries.length+1) : 24;
                     $entry.css({
-                        top: 24 * ($overlapping_entries.length+1),
+                        top: top,
                         width: ( $slots.length * 100 - 8 ) + '%'
                     });
                     $first_slot.append($entry);
