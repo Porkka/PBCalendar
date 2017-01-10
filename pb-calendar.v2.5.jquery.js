@@ -391,7 +391,7 @@
                     if(plugin.detectLeftButton(e)) {
                         // Get first entry with the same gui
                         var guid = $this.closest('.entry').attr('data-guid');
-                        var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
+                        var $associates = plugin.$element.find('.entry[data-guid="' + guid + '"]');
                         plugin.selections.entry = $associates.first();
                         plugin.active_actions.entry_moving = true;
                         // Save clone for reverting the changes
@@ -431,14 +431,16 @@
             plugin.$element.on('mousemove' + '.' + plugin._name, '.entry', function(e) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-                var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
-                if(!plugin.active_actions.resizing && plugin.selections.start) { // Return if range selection is in progress
-                    if(plugin.active_actions.resizing) {
-                        plugin.doEntryResize($this);
-                    } else if(plugin.active_actions.selecting) {
-                        plugin.doSelections(e, $this);
-                    }
-                }
+                if(plugin.active_actions.resizing) {
+                    var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
+                    plugin.doEntryResize($this);
+                } else if(plugin.active_actions.selecting) {
+                    var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
+                    plugin.doSelections(e, $this);
+                }  else if(plugin.active_actions.entry_moving) {
+                    var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
+                    plugin.doEntryMove($this);
+                } 
             });
             plugin.$element.on('mousedown' + '.' + plugin._name, '.pb-resizer', function(e) {
                 e.stopPropagation();
@@ -451,7 +453,7 @@
                     plugin.active_actions.resizing = true;
                     // Get first entry with the same gui
                     var guid = $(this).closest('.entry').attr('data-guid');
-                    var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
+                    var $associates = plugin.$element.find('.entry[data-guid="' + guid + '"]');
                     plugin.selections.entry = $associates.first();
                     // Get entry's slot
                     plugin.selections.start = plugin.selections.entry.closest('td');
@@ -639,14 +641,15 @@
 
 
         doEntryResize: function($end_slot) {
-
-            if(!this.selections.entry) {
+            if(!this.selections.entry && $end_slot) {
+                return;
+            } else if(!$end_slot.hasClass('pb-skeleton')) {
+                return;
+            } else if(!this.selections.entry.length) {
                 return;
             }
 
-            var $start_slot = this.selections.entry.closest('td');
-
-            var start = parseInt($start_slot.attr('data-timestamp'));
+            var start = parseInt(this.selections.entry.attr('data-from'));
             var end = parseInt($end_slot.attr('data-timestamp'));
 
             if(start > end) {
@@ -671,10 +674,15 @@
             entry.end = this._longFormat(moment_end);
             entry.most_top = 1;
 
-            var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
+            var $associates = this.$element.find('.entry[data-guid="' + guid + '"]');
             $associates.remove();
             delete entry.has_resizer;
-            var $rendered_entries = this._monthEntryRender([ entry ]);
+
+            if(this.options.calendar_type == 'month') {
+                var $rendered_entries = this._monthEntryRender([ entry ]);
+            } else {
+                var $rendered_entries = this._dayEntryRender([ entry ]);
+            }
 
             if($rendered_entries) {
                 var $entry = $rendered_entries[0];
@@ -687,32 +695,42 @@
 
 
          doEntryMove: function($move_to_slot) {
-
             if(!this.selections.entry && $move_to_slot) {
                 return;
             } else if(!$move_to_slot.hasClass('pb-skeleton')) {
+                return;
+            } else if(!this.selections.entry.length) {
                 return;
             }
 
             var guid = this.selections.entry.attr('data-guid');
             var entry = this.getEntryByGUID(guid);
+
             var start = parseInt($move_to_slot.attr('data-timestamp'));
-            var old_start = parseInt(this.selections.entry.closest('.pb-skeleton').attr('data-timestamp'));
+            var old_start = parseInt(this.selections.entry.attr('data-from'));
 
             old_start = moment(old_start * 1000);
             start = moment(start * 1000);
             end = moment(entry.end);
-
-            var diff = Math.abs(old_start.diff(start, 'days'));
-            if(old_start.format('x') > start.format('x')) {
-                end.subtract(diff, 'days');
-            } else if(old_start.format('x') < start.format('x')) {
-                end.add(diff, 'days');
+            if(this.options.calendar_type == 'month') { // Move in days
+                var diff = Math.abs(old_start.diff(start, 'days'));
+                if(old_start.format('x') > start.format('x')) {
+                    end.subtract(diff, 'days');
+                } else if(old_start.format('x') < start.format('x')) {
+                    end.add(diff, 'days');
+                }
+            } else { // Move in minutes
+                var diff = Math.abs(old_start.diff(start, 'minutes'));
+                if(old_start.format('x') > start.format('x')) {
+                    end.subtract(diff, 'minutes');
+                } else if(old_start.format('x') < start.format('x')) {
+                    end.add(diff, 'minutes');
+                }
             }
-            var old_start = moment(entry.start);
-            var old_end = moment(entry.end);
 
             if(this.options.calendar_type == 'month') {
+                var old_start = moment(entry.start);
+                var old_end = moment(entry.end);
                 start.hours(old_start.hours());
                 end.hours(old_end.hours());
             }
@@ -721,9 +739,15 @@
             entry.end = this._longFormat(end);
             entry.most_top = 1;
 
-            var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
+            var $associates = this.$element.find('.entry[data-guid="' + guid + '"]');
             $associates.remove();
-            var $rendered_entries = this._monthEntryRender([ entry ]);
+
+            if(this.options.calendar_type == 'month') {
+                var $rendered_entries = this._monthEntryRender([ entry ]);
+            } else {
+                var $rendered_entries = this._dayEntryRender([ entry ]);
+            }
+
             if($rendered_entries) {
                 var $entry = $rendered_entries[0];
                 this.selections.entry = $entry;
@@ -769,10 +793,10 @@
             }
             for(var ent in this.options.entries) {
                 if(this.options.entries[ent].guid == guid) {
+                    this.options.entries[ent] = replacement;
                     break;
                 }
             }
-            this.options.entries[ent] = replacement;
             return true;
         },
 
@@ -907,61 +931,79 @@
             }
         },
   
-        renderNormal: function(entry, $slots) {
+        renderNormal: function() {
             var entries = this.options.entries;
             // Contains all the calendar's entries
             var $container = this.$element;
 
-            this.$element.find('.pb-skeleton .entry').remove();
-            this.$element.find('.pb-skeleton .pb-read-more').remove();
+            this.$element.find('.entry').remove();
+            this.$element.find('.pb-read-more').remove();
 
             if(this.options.calendar_type != 'month') {
-                for(var ent in entries) {
+                var $renders = this._dayEntryRender(entries);
+            } else {
+                var $renders = this._monthEntryRender(entries);
+            }
+        },
 
-                    entries[ent].guid = this.guid();
 
-                    var entry = entries[ent];
+        _dayEntryRender: function(entries) {
+            var plugin = this;
+            var $entries = [ ];
+            var $container = this.$element;
 
-                    var end = moment(entry.end);
-                    var start = moment(entry.start);
+            for(var ent in entries) {
 
-                    if(this.options.calendar_type == 'month') {
-                        start.seconds(0);
-                        start.minutes(0);
-                        start.hours(0);
+                entries[ent].guid = this.guid();
 
-                        end.seconds(0);
-                        end.minutes(0);
-                        end.hours(0);
-                    }
+                var entry = entries[ent];
 
-                    var $slots = this.getCalendarSlotInTimestampRange( start.format('X'), end.format('X'));
-                    if(!$slots.length) {
-                        continue;
-                    }
+                entry.has_resizer = 1;
 
-                    var $slot = $('<div class="entry">');
-                    $slot.html(entry.title);
+                var end = moment(entry.end);
+                var start = moment(entry.start);
 
-                    if(entry.color) {
-                        $slot.css('background', entry.color);
-                    }
+                if(this.options.calendar_type == 'month') {
+                    start.seconds(0);
+                    start.minutes(0);
+                    start.hours(0);
 
-                    $slot.attr('title', 'Klo ' + moment(entry.start).format('HH:mm') + ' - ' + moment(entry.end).format('HH:mm'));
-
-                    // Set slot size
-                    $slot.css('width', $slots.width()+1 );
-                    $slot.css('height', parseInt($slots.css('height')) * $slots.length );
-
-                    // Set position
-                    $slot.css('top', $slots.first().offset().top);
-                    $slot.css('left', $slots.first().offset().left + parseInt($slots.css('padding-left')));
-                    $container.append($slot);
+                    end.seconds(0);
+                    end.minutes(0);
+                    end.hours(0);
                 }
 
-            } else {
-                var $renders = this._monthEntryRender(this.options.entries);
+                var $slots = this.getCalendarSlotInTimestampRange( start.format('X'), end.format('X'));
+                if(!$slots.length) {
+                    continue;
+                }
+
+                var $first_slot = $slots.first();
+
+                var from_stamp = start.format('X');
+                var $overlapping_entries = plugin.getEntriesInTimestampRange(from_stamp, from_stamp);
+                // Sort the elements
+                var $entry = plugin._createEntryElement(entry);
+                if(entry.split) {
+                    $entry.attr('data-splitted', 1);
+                }
+                if(entry.has_resizer) {
+                    $entry.append('<p href="#" class="pb-resizer"></p>');
+                }
+                if($overlapping_entries.length >= 2 && !entry.most_top) {
+                    plugin.appendToReadMore($entry, $first_slot);
+                } else {
+                    // Set entry size
+                    $entry.css('width', $slots.width()+1 );
+                    $entry.css('height', parseInt($slots.css('height')) * $slots.length );
+                    // Set position
+                    $entry.css('top', $slots.first().offset().top);
+                    $entry.css('left', $slots.first().offset().left + parseInt($slots.css('padding-left')));
+                    $container.append($entry);
+                }
+                $entries.push($entry);
             }
+            return $entries;    
         },
 
 
@@ -1204,8 +1246,8 @@
                 }
             }
 
-            $entry.attr('data-from', start.format('X'));
-            $entry.attr('data-to', end.format('X'));
+            $entry.attr('data-from', moment(entry.start).format('X'));
+            $entry.attr('data-to', moment(entry.end).format('X'));
 
             var display = entry.title;
             $entry.attr('title', moment(entry.start).format('L'));
@@ -1238,7 +1280,6 @@ console.log(times);
                 $cell.appendTo($row);
                 $row.appendTo($container);
                 var $day_cells = this._getDayCells(times[t]);
-                $day_cells.append('<span>');
                 $row.append($day_cells);
                 $row = $('<tr>');
             }
@@ -1264,7 +1305,6 @@ console.log(times);
                 $cell.appendTo($row);
                 $row.appendTo($container);
                 var $day_cells = this._getDayCells(times[t]);
-                $day_cells.append('<span>');
                 $row.append($day_cells);
                 $row = $('<tr>');
             }
@@ -1457,6 +1497,7 @@ console.log(times);
                     var $cell = $('<td>');
                     $cell.attr('data-timestamp', start.format('X'));
                     $cell.attr('data-sanitized', start.format('l') + ' ' + start.format('LT'));
+                    $cell.addClass('pb-skeleton');
                     start.add(1, 'days').hours(moment.hours()).minutes(moment.minutes()).seconds(moment.seconds());
                     $cells = $cells.add($cell);
                 }
@@ -1465,13 +1506,14 @@ console.log(times);
                 var $cell = $('<td>');
                 $cell.attr('data-timestamp', start.format('X'));
                 $cell.attr('data-sanitized', start.format('l') + ' ' + start.format('LT'));
+                $cell.addClass('pb-skeleton');
                 $cells = $cells.add($cell);
-
                 return $cells;
             } else if(this.options.calendar_type == 'day') {
                 var $cell = $('<td>');
                 $cell.attr('data-timestamp', moment.format('X'));
                 $cell.attr('data-sanitized', moment.format('l') + ' ' + moment.format('LT'));
+                $cell.addClass('pb-skeleton');
                 return $cell;
             };
 

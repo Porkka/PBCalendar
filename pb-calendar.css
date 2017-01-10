@@ -107,7 +107,19 @@ a.pb-read-more {
 .pb-read-more-container .entry {
 	position: relative !important;
 }
-.pb-resizer {
+.week .pb-resizer {
+    width: 10px;
+    height: 12px;
+    float: none;
+    display: block;
+    cursor: s-resize;
+	background-color: aliceblue;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.month .pb-resizer {
 	margin: -2px -4px;
 	width: 16px;
 	height: 22px;
