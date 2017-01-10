@@ -264,7 +264,10 @@
             entry: null,
             start: null,
             end: null,
-        }
+        };
+        this.timers = {
+            mouse: null
+        };
 
         this.options = $.extend({ }, this._defaults, options );
         this.initial_options = this.options;
@@ -358,53 +361,58 @@
                 }
             });
             plugin.$element.on('click' + '.' + plugin._name, '.entry', function(e) {
-                if(plugin.selections.start) { // Return if range selection is in progress
-                    return;
-                }
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-                if(plugin.detectLeftButton(e)) {
-                    var $target = $(e.target);
-                    console.log('Entry clicked');
-                }
-            });
-            plugin.$element.on('mousedown' + '.' + plugin._name, '.entry', function(e) {
-                if(plugin.flags.mouse.down || plugin.active_actions.resizing) {
-                    return;
-                }
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-
+                clearTimeout(plugin.timers.mouse);
+                plugin.flags.mouse.up = true;
+                plugin.flags.mouse.down = false;
                 plugin.resetSelections();
 
-                $('.pb-skeleton.selected').removeClass('selected');
-                if(plugin.detectLeftButton(e)) {
-                    // Get first entry with the same gui
-                    var guid = $(this).closest('.entry').attr('data-guid');
-                    var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
-                    plugin.selections.entry = $associates.first();
-                    plugin.active_actions.entry_moving = true;
-                    // Save clone for reverting the changes
-                    plugin.backlog.entry = plugin.clone(plugin.getEntryByGUID(guid));
-                    console.log('Entry mouse down');
-                }
+
+                var entry = plugin.getEntryByGUID($(this).attr('data-guid'));
+                plugin.selections.entry = $(this);
+                plugin.backlog.entry = plugin.clone( entry );
+
+                console.log('Entry clicked');
+                plugin._triggerEntryClicked();
+            });
+            plugin.$element.on('mousedown' + '.' + plugin._name, '.entry', function(e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                var $this = $(this);
+                clearTimeout(plugin.timers.mouse);
+                plugin.timers.mouse = setTimeout(function() {
+
+                    plugin.flags.mouse.down = true;
+                    plugin.flags.mouse.up = false;
+
+                    plugin.resetSelections();
+                    $('.pb-skeleton.selected').removeClass('selected');
+                    if(plugin.detectLeftButton(e)) {
+                        // Get first entry with the same gui
+                        var guid = $this.closest('.entry').attr('data-guid');
+                        var $associates = $('.pb-skeleton .entry[data-guid="' + guid + '"]');
+                        plugin.selections.entry = $associates.first();
+                        plugin.active_actions.entry_moving = true;
+                        // Save clone for reverting the changes
+                        plugin.backlog.entry = plugin.clone(plugin.getEntryByGUID(guid));
+                        console.log('Entry mouse down');
+                    }
+                }, 200);
             });
             plugin.$element.on('mouseup' + '.' + plugin._name, '.entry', function(e) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
-                plugin.flags.mouse.down = false;
-                plugin.flags.mouse.up = true;
-
                 // Check for other actions
-                if(plugin.active_actions.entry_moving) {
+                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
                         plugin.renderNormal();
                         plugin._triggerEntryMoved();
                     }
-                } else if(plugin.active_actions.resizing) {
+                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.renderNormal();
                         plugin.revertEntryChanges();
@@ -413,9 +421,12 @@
                     }
                 }
 
+                plugin.flags.mouse.down = false;
+                plugin.flags.mouse.up = true;
+                console.log('Entry mouse up');
+
                 plugin.resetSelections();
 
-                console.log('Entry mouse up');
             });
             plugin.$element.on('mousemove' + '.' + plugin._name, '.entry', function(e) {
                 e.stopPropagation();
@@ -451,19 +462,16 @@
             });
 /*** TD events ***/
             plugin.$element.on('mousedown' + '.' + plugin._name, 'td', function(e) {
+                    console.log('down');
                 if(plugin.detectLeftButton(e)) {
                     plugin.flags.mouse.down = true;
                     plugin.flags.mouse.up = false;
-                    console.log('down');
                 }
             });
             plugin.$element.on('mouseup' + '.' + plugin._name, 'td', function(e) {
 
-                plugin.flags.mouse.down = false;
-                plugin.flags.mouse.up = true;
-
                 // Check for other actions
-                if(plugin.active_actions.entry_moving) {
+                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
@@ -472,7 +480,7 @@
                     }
                     plugin.resetSelections();
                     return;
-                } else if(plugin.active_actions.resizing) {
+                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
@@ -482,6 +490,9 @@
                     plugin.resetSelections();
                     return;
                 }
+
+                plugin.flags.mouse.down = false;
+                plugin.flags.mouse.up = true;
 
                 // Check selection order
                 if(!plugin.selections.start) {
@@ -594,6 +605,10 @@
         _triggerEntryResized: function() {
             var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
             this.$element.trigger('onEntryResized', [ entry, this ]);
+        },
+        _triggerEntryClicked: function() {
+            var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
+            this.$element.trigger('onEntryClick', [ entry, this ]);  
         },
 
         getElementFromMousePosition: function(x, y, $obscuring_element) {

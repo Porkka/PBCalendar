@@ -99,5 +99,8 @@ $(function() {
 	$('#calendar').on('onEntryMoved', function(e, entry, plugin) {
 		console.log('Moved: ', e, entry, plugin);
 	});
+	$('#calendar').on('onEntryClick', function(e, entry, plugin) {
+		console.log('Click: ', e, entry, plugin);
+	});
 
 });
