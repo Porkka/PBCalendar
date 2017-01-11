@@ -66,6 +66,30 @@ $(function() {
 				}
 			 },
 			 {
+				title: '0000',
+				start: '2016-11-21 09:30',
+				end: '2016-11-21 10:00',
+				styles: {
+					background: 'green',
+				}
+			 },
+			 {
+				title: '0000',
+				start: '2016-11-21 09:30',
+				end: '2016-11-21 10:00',
+				styles: {
+					background: 'brown',
+				}
+			 },
+			 {
+				title: '0000',
+				start: '2016-11-21 09:30',
+				end: '2016-11-21 10:00',
+				styles: {
+					background: 'pink',
+				}
+			 },
+			 {
 				title: '1212',
 				start: '2016-11-21 08:30',
 				end: '2016-11-27 09:30',

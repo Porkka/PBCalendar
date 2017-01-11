@@ -979,8 +979,8 @@
                 if(!$slots.length) {
                     continue;
                 }
-
                 var $first_slot = $slots.first();
+                var base_offset = $slots.first().offset().left + parseInt($slots.css('padding-left'));
 
                 var from_stamp = start.format('X');
                 var $overlapping_entries = plugin.getEntriesInTimestampRange(from_stamp, from_stamp);
@@ -992,24 +992,25 @@
                 if(entry.has_resizer) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
-                if($overlapping_entries.length >= 2 && !entry.most_top) {
-                    plugin.appendToReadMore($entry, $first_slot);
+                // Set entry size
+                var offset = 0;
+                var o_len = $overlapping_entries.length;
+                if(o_len) {
+                    offset = $slots.width() / (o_len + 1);
+                    $overlapping_entries.css('width', offset);
+                    $entry.css('width', offset);
+                    $overlapping_entries.each(function(index) {
+                        $(this).css('left', base_offset + offset * index);
+                    });
+                    offset = offset * o_len;
                 } else {
-                    // Set entry size
-                    var offset = 0;
-                    if($overlapping_entries.length) {
-                        offset = $slots.width() / 1.5;
-                        $overlapping_entries.css('width', offset);
-                        $entry.css('width', offset);
-                    } else {
-                        $entry.css('width', $slots.width() + 1 );
-                    }
-                    $entry.css('height', parseInt($slots.css('height')) * $slots.length );
-                    // Set position
-                    $entry.css('top', $slots.first().offset().top);
-                    $entry.css('left', $slots.first().offset().left + parseInt($slots.css('padding-left')) + (offset / 1.9));
-                    $container.append($entry);
+                    $entry.css('width', $slots.width());
                 }
+                // Set position
+                $entry.css('top', $slots.first().offset().top);
+                $entry.css('height', parseInt($slots.css('height')) * $slots.length );
+                $entry.css('left', base_offset + (offset));
+                $container.append($entry);
                 $entries.push($entry);
             }
             return $entries;    
