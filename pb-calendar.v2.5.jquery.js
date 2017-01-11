@@ -952,28 +952,30 @@
             var $entries = [ ];
             var $container = this.$element;
 
-            for(var ent in entries) {
-
-                entries[ent].guid = this.guid();
-
-                var entry = entries[ent];
-
-                entry.has_resizer = 1;
-
-                var end = moment(entry.end);
-                var start = moment(entry.start);
-
-                if(this.options.calendar_type == 'month') {
-                    start.seconds(0);
-                    start.minutes(0);
-                    start.hours(0);
-
-                    end.seconds(0);
-                    end.minutes(0);
-                    end.hours(0);
+            // Split overflowing entries
+            var entry_array = plugin.splitDayEntries(entries);
+            entry_array = entry_array.sort(function(a,b){
+                if(a.split) {
+                    return -1;
+                } else if(b.split) {
+                    return 1;
                 }
+                if(a.start < b.start) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            });
+            for(var ent in entry_array) {
 
-                var $slots = this.getCalendarSlotInTimestampRange( start.format('X'), end.format('X'));
+                entry = entry_array[ent];
+                end = moment(entry.end);
+                end.seconds(0);
+                start = moment(entry.start);
+                start.seconds(0);
+
+                // Find calendar slots
+                $slots = plugin.getCalendarSlotInTimestampRange(start.format('X'), end.format('X'));
                 if(!$slots.length) {
                     continue;
                 }
@@ -994,11 +996,18 @@
                     plugin.appendToReadMore($entry, $first_slot);
                 } else {
                     // Set entry size
-                    $entry.css('width', $slots.width()+1 );
+                    var offset = 0;
+                    if($overlapping_entries.length) {
+                        offset = $slots.width() / 1.5;
+                        $overlapping_entries.css('width', offset);
+                        $entry.css('width', offset);
+                    } else {
+                        $entry.css('width', $slots.width() + 1 );
+                    }
                     $entry.css('height', parseInt($slots.css('height')) * $slots.length );
                     // Set position
                     $entry.css('top', $slots.first().offset().top);
-                    $entry.css('left', $slots.first().offset().left + parseInt($slots.css('padding-left')));
+                    $entry.css('left', $slots.first().offset().left + parseInt($slots.css('padding-left')) + (offset / 1.9));
                     $container.append($entry);
                 }
                 $entries.push($entry);
@@ -1097,7 +1106,6 @@
             });
 
             $entry.appendTo($readMore);
-
         },
 
 
@@ -1154,6 +1162,94 @@
             return entry_array;
         },
 
+
+        splitDayEntries: function(entries) {
+            var plugin = this;
+            var entry_array = [ ]; // 
+            var slot_overflow = 0;
+            for(var ent in entries) {
+           
+                // Shorten things
+                entry = entries[ent];
+
+                // Instanciate moment from entry's start & end.
+                // Make sure they are at 00:00:00 time 
+                end = moment(entry.end);
+                end.locale(plugin.options.locale);
+                end.seconds(0);
+                end.minutes(0);
+                end.hours(0);
+                start = moment(entry.start);
+                start.locale(plugin.options.locale);
+                start.seconds(0);
+                start.minutes(0);
+                start.hours(0);
+
+                var days = plugin.rangeToDays(entry.start, entry.end);
+                if(days.length > 1) {
+                    // Clone so we don't change the existing one...
+                    var days_count = days.length;
+                    for(var i = 0; i < days_count; i++) {
+                        var split = plugin.clone(entry);
+
+                        split.start = days[i].start;
+                        split.end = days[i].end;
+
+                        if((i+1) == days_count) {
+                            split.has_resizer = true;
+                        }
+
+                        entry_array.push(split);
+                    }
+                } else {
+                    entry.has_resizer = true;
+                    entry_array.push(entry);
+                }
+            }
+            console.log(entry_array, 'entry array');
+            return entry_array;
+        },
+
+        /** Starting and ending dates are the dates supplied as parameters **/
+        rangeToDays: function(a_date, b_date) {
+
+            var start = moment(a_date);
+            var end = moment(b_date);
+            var tmp = start.clone();
+
+            // Days to add to start and to end to get full weeks
+            var start_num = 24 - start.hour() - start.minutes() / 60 - 0.01;
+            var end_num = 24 - end.hour() - end.minutes() / 60 - 0.01;
+
+            // Return variable
+            var days = [ ];
+
+            // Init day variable and add first day to return array
+            var day = { start: null, end: null };
+            day.start = this._longFormat(tmp);
+            tmp.add(start_num, 'hours');
+            day.end = this._longFormat(tmp);
+
+            // Loop till too far (same day as the parameter end date)
+            while(tmp.format('x') <= end.format('x')) {
+                // Add to return value
+                days.push(day);
+                var day = { start: null, end: null };
+                // Skip to monday
+                tmp.add(1, 'hours');
+                day.start = this._longFormat(tmp);
+                // Skip to sunday
+                tmp.add(23, 'hours');
+                day.end = this._longFormat(tmp);
+            }
+            tmp.subtract(end_num, 'hours');
+            day.end = this._longFormat(tmp);
+            // Add to return value
+            days.push(day);
+
+console.log(days);
+            return days;
+        },
         /** Starting and ending dates are the dates supplied as parameters **/
         rangeToWeeks: function(a_date, b_date) {
 
@@ -1175,7 +1271,7 @@
             tmp.add(start_num, 'days');
             week.end = this._longFormat(tmp);
             // Loop till too far (same week as the parameter end date)
-            while( tmp.format('x') <= end.format('x')) {
+            while(tmp.format('x') <= end.format('x')) {
                 // Add to return value
                 weeks.push(week);
                 var week = { start: null, end: null };
