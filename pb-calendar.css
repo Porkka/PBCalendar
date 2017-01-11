@@ -108,16 +108,21 @@ a.pb-read-more {
 	position: relative !important;
 }
 .week .pb-resizer {
-    width: 10px;
-    height: 12px;
-    float: none;
-    display: block;
-    cursor: s-resize;
+	left: 50%;
+	margin: 0;
+	bottom: 0;
+	width: 90%;
+	float: none;
+	height: 12px;
+	display: block;
+	cursor: s-resize;
 	background-color: aliceblue;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	position: absolute;
+	transform: translate(-50%, -30%);
 }
 .month .pb-resizer {
 	margin: -2px -4px;
