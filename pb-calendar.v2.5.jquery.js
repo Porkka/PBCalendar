@@ -89,10 +89,7 @@
     $.fn.selection = function() {
         var plugin = $(this).data('plugin_PBCalendar');
         if(plugin) {
-            var retval = { data: { }, elements: $() };
-            retval.data = plugin.data.selection.all;
-            retval.elements = plugin.getCalendarSlotByTimestamps(retval.data);
-            return retval;
+
         } else {
             console.log('$.fn.selection: PBCalendar not found!');
         }
@@ -224,7 +221,8 @@
     $.fn.clearSelections = function() {
         var plugin = $(this).data('plugin_' + pluginName);
         if(plugin) {
-            plugin.clearSelections();
+            plugin.resetSelections();
+            plugin.$element.find('.selected').removeClass('selected');
         } else {
             console.log('$.fn.clearSelections: PBCalendar not found!');
         }
@@ -560,6 +558,7 @@
                     if(plugin.selections.start && plugin.selections.end && plugin.detectLeftButton(e)) {
                         var start = parseInt(plugin.selections.start.attr('data-timestamp')) * 1000;
                         var end = parseInt(plugin.selections.end.attr('data-timestamp')) * 1000;
+                        plugin._triggerRangeSelected();
                         plugin.stopActions();
                     }
                 }, 200);
@@ -605,7 +604,7 @@
             }
         },
 
-/*** TRIGGERS ***/
+/*** TRIGGERS - Entry ***/
         _triggerEntryMoved: function() {
             var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
             this.$element.trigger('onEntryMoved', [ entry, this ]);
@@ -617,6 +616,14 @@
         _triggerEntryClicked: function() {
             var entry = this.getEntryByGUID( this.selections.entry.attr('data-guid') );
             this.$element.trigger('onEntryClick', [ entry, this ]);  
+        },
+/*** TRIGGERS - Slots ***/
+        _triggerRangeSelected: function() {
+            var range = {
+                start: this.getEntryByGUID(this.selections.start.attr('guid')),
+                end: this.getEntryByGUID(this.selections.end.attr('guid')),
+            };
+            this.$element.trigger('onRangeSelected', [ range, this ]);  
         },
 
         getElementFromMousePosition: function(x, y, $obscuring_element) {

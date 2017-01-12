@@ -110,5 +110,9 @@ $(function() {
 	$('#calendar').on('onEntryClick', function(e, entry, plugin) {
 		console.log('Click: ', e, entry, plugin);
 	});
+	$('#calendar').on('onRangeSelected', function(e, range, plugin) {
+		console.log('Range selected: ', e, range, plugin);
+	});
+
 
 });
