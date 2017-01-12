@@ -134,7 +134,6 @@
             if(plugin.debug) {
                 console.log('Moved to month', plugin.data.selected_date);
             }
-            console.log('fasdfas');
             plugin.reload({
                 date: plugin.data.today.add(1, 'months').clone()
             });
@@ -373,7 +372,9 @@
                 plugin.selections.entry = $(this);
                 plugin.backlog.entry = plugin.clone( entry );
 
-                console.log('Entry clicked');
+                if(plugin.debug) {
+                    console.log('Entry clicked');
+                }
                 plugin._triggerEntryClicked();
             });
             plugin.$element.on('mousedown' + '.' + plugin._name, '.entry', function(e) {
@@ -396,7 +397,9 @@
                         plugin.active_actions.entry_moving = true;
                         // Save clone for reverting the changes
                         plugin.backlog.entry = plugin.clone(plugin.getEntryByGUID(guid));
-                        console.log('Entry mouse down');
+                        if(plugin.debug) {
+                            console.log('Entry mouse down');
+                        }
                     }
                 }, 200);
             });
@@ -423,7 +426,9 @@
 
                 plugin.flags.mouse.down = false;
                 plugin.flags.mouse.up = true;
-                console.log('Entry mouse up');
+                if(plugin.debug) {
+                    console.log('Entry mouse up');
+                }
 
                 plugin.resetSelections();
 
@@ -464,8 +469,10 @@
             });
 /*** TD events ***/
             plugin.$element.on('mousedown' + '.' + plugin._name, 'td', function(e) {
-                    console.log('down');
                 if(plugin.detectLeftButton(e)) {
+                    if(plugin.debug) {
+                        console.log('down');
+                    }
                     plugin.flags.mouse.down = true;
                     plugin.flags.mouse.up = false;
                 }
@@ -517,7 +524,6 @@
                 var trigger = [ { start: moment(start), end: moment(end) }, plugin.selections, plugin ];
                 plugin.$element.trigger('onRangeSelected', trigger);
 
-                console.log('up', trigger);
             });
             plugin.$element.on('mousedown' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
                 e.stopPropagation();
@@ -774,7 +780,9 @@
                 var $entry = $rendered_entries[0];
                 this.selections.entry = $entry;
                 this.replaceEntryByGUID(guid, entry);
-                console.log( this.selections.entry, this.getEntryByGUID(guid));
+                if(this.debug) {
+                    console.log( this.selections.entry, this.getEntryByGUID(guid));
+                }
             }
         },
 
@@ -1084,7 +1092,6 @@
                 if(entry.has_resizer) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
-                console.log($overlapping_entries);
                 if($overlapping_entries.length >= 3 && !entry.most_top) {
                     plugin.appendToReadMore($entry, $first_slot);
                 } else {
