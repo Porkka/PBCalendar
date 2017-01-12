@@ -652,9 +652,6 @@
             var start = parseInt(this.selections.entry.attr('data-from'));
             var end = parseInt($end_slot.attr('data-timestamp'));
 
-            if(start > end) {
-                return;
-            }
 
             var guid = this.selections.entry.attr('data-guid');
             var entry = this.clone( this.getEntryByGUID(guid) );
@@ -665,8 +662,14 @@
             var old_start = moment(entry.start);
             var old_end = moment(entry.end);
 
+            var tmp = moment_start.clone();
+
+            if(tmp.hours(0).minutes(0).seconds(0).format('X') > moment_end.format('X')) {
+                return;
+            }
+
+            moment_start.hours(old_start.hours());
             if(this.options.calendar_type == 'month') {
-                moment_start.hours(old_start.hours());
                 moment_end.hours(old_end.hours());
             }
 
@@ -695,6 +698,7 @@
 
 
          doEntryMove: function($move_to_slot) {
+      
             if(!this.selections.entry && $move_to_slot) {
                 return;
             } else if(!$move_to_slot.hasClass('pb-skeleton')) {
@@ -713,12 +717,17 @@
             start = moment(start * 1000);
             end = moment(entry.end);
             if(this.options.calendar_type == 'month') { // Move in days
+                old_start.hours(0).minutes(0).seconds(0);
                 var diff = Math.abs(old_start.diff(start, 'days'));
                 if(old_start.format('x') > start.format('x')) {
                     end.subtract(diff, 'days');
                 } else if(old_start.format('x') < start.format('x')) {
                     end.add(diff, 'days');
                 }
+                var old_start = moment(entry.start);
+                var old_end = moment(entry.end);
+                start.hours(old_start.hours());
+                end.hours(old_end.hours());
             } else { // Move in minutes
                 var diff = Math.abs(old_start.diff(start, 'minutes'));
                 if(old_start.format('x') > start.format('x')) {
@@ -728,12 +737,6 @@
                 }
             }
 
-            if(this.options.calendar_type == 'month') {
-                var old_start = moment(entry.start);
-                var old_end = moment(entry.end);
-                start.hours(old_start.hours());
-                end.hours(old_end.hours());
-            }
 
             entry.start = this._longFormat(start);
             entry.end = this._longFormat(end);
@@ -775,6 +778,7 @@
             }
         },
 
+
         getEntryByGUID: function(guid) {
             if(!guid) {
                 return;
@@ -786,6 +790,7 @@
             }
             return null;
         },
+
 
         replaceEntryByGUID: function(guid, replacement) {
             if(!guid) {
@@ -799,6 +804,7 @@
             }
             return true;
         },
+
 
         doSelections: function(e, $slot) {
             if(!this.active_actions.resizing && this.selections.start && this.detectLeftButton(e)) {
@@ -816,8 +822,7 @@
             }
         },
 
-
-        // Unbind events that trigger methods
+        /*** Unbind events that trigger methods ***/
         unbindEvents: function() {
             $(window).off('.'+this._name);
             $('.pb-calendar a.next').off('.'+this._name);
@@ -874,6 +879,7 @@
             return times;
         },
 
+
         monthData: function(moment) {
             var times = [];            
             var tmp = moment.clone();
@@ -891,9 +897,9 @@
                 start.add(1, 'd');
                 times.push(start.clone());
             }
-// console.log('Month Data', times);
             return times;
         },
+
 
         /*** Render calendar skeleton and entries ***/
         initializeView: function(times) {
@@ -907,6 +913,7 @@
             this.initializeEntryObjects();
         },
 
+
         initializeEntryObjects: function() {
             switch(this.options.render_mode) {
                 case 'simple':
@@ -917,6 +924,7 @@
                 break;
             }
         },
+
 
         renderSimple: function() {
             var entries = this.options.entries;
@@ -931,6 +939,7 @@
             }
         },
   
+
         renderNormal: function() {
             var entries = this.options.entries;
             // Contains all the calendar's entries
@@ -1065,7 +1074,8 @@
                 var $first_slot = $slots.first();
 
                 var from_stamp = start.format('X');
-                var $overlapping_entries = plugin.getEntriesInTimestampRange(from_stamp, from_stamp);
+                var to_stamp = end.hours(23).minutes(59).seconds(59).format('X');
+                var $overlapping_entries = plugin.getEntriesInTimestampRange(from_stamp, to_stamp);
                 // Sort the elements
                 var $entry = plugin._createEntryElement(entry);
                 if(entry.split) {
@@ -1074,6 +1084,7 @@
                 if(entry.has_resizer) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
+                console.log($overlapping_entries);
                 if($overlapping_entries.length >= 3 && !entry.most_top) {
                     plugin.appendToReadMore($entry, $first_slot);
                 } else {
@@ -1207,7 +1218,6 @@
                     entry_array.push(entry);
                 }
             }
-            console.log(entry_array, 'entry array');
             return entry_array;
         },
 
@@ -1248,9 +1258,9 @@
             // Add to return value
             days.push(day);
 
-console.log(days);
             return days;
         },
+
         /** Starting and ending dates are the dates supplied as parameters **/
         rangeToWeeks: function(a_date, b_date) {
 
@@ -1287,8 +1297,6 @@ console.log(days);
             week.end = this._longFormat(tmp);
             // Add to return value
             weeks.push(week);
-
-// console.log(weeks);
             return weeks;
         },
 
@@ -1297,6 +1305,7 @@ console.log(days);
             return moment.format('YYYY') + '-' + moment.format('MM') + '-' + moment.format('DD') 
             + ' ' + moment.format('HH')+ ':' + moment.format('mm')
         },
+
 
         guid: function() {
           function s4() {
@@ -1308,6 +1317,7 @@ console.log(days);
             s4() + '-' + s4() + s4() + s4();
         },
 
+
         clone: function(obj) {
             if (null == obj || "object" != typeof obj) return obj;
             var copy = obj.constructor();
@@ -1316,6 +1326,7 @@ console.log(days);
             }
             return copy;
         },
+
 
         _createEntryElement: function(entry) {
             var end = moment(entry.end);
@@ -1367,7 +1378,6 @@ console.log(days);
             // Header
             var $header_content = this.calendarHeader(tmp);
             $container.append($header_content);
-console.log(times);
 
             for(var t in times) {
                 $cell = $('<td class="pb-time">');
@@ -1382,6 +1392,7 @@ console.log(times);
             }
             $container.appendTo(this.$element);
         },
+
 
         _renderAgendaWeek: function(times) {
             var $element = null;
@@ -1408,6 +1419,7 @@ console.log(times);
 
             $container.appendTo(this.$element);
         },
+
 
         _renderAgendaMonth: function(times) {
 
@@ -1522,6 +1534,7 @@ console.log(times);
                 return $('<tr class="heading-row"><th colspan="2">' + $header_content + '</th></tr>');
             }
         },
+
 
         monthHeader: function(moment) {
             // Header
@@ -1658,13 +1671,11 @@ console.log(times);
         },
 
         getEntriesInTimestampRange: function(from_timestamp, to_timestamp) {
-
             var $entries = this.$element.find('.entry').filter(function( index, element ) {
                 var found = ($(element).data('to') >= from_timestamp && $(element).data('from') <= to_timestamp)
                 return found;
             });
-                return $entries;
-
+            return $entries;
         },
 
         getMonthNames: function() {
@@ -1690,8 +1701,6 @@ console.log(times);
             }
             plugin.reload(options);
         },
-
-
 
     });
 

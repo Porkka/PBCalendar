@@ -2,7 +2,7 @@ $(function() {
 	$('#calendar').PBCalendar({
 		locale: 'fi',
 		hour_interval: '00:30',
-		calendar_type: 'week',
+		calendar_type: 'month',
 		render_mode: 'normal',
 		date: '2016-11-22',
 		dayStart: '00:00', 
@@ -81,22 +81,22 @@ $(function() {
 					background: 'brown',
 				}
 			 },
-			 {
-				title: '0000',
-				start: '2016-11-21 09:30',
-				end: '2016-11-21 10:00',
-				styles: {
-					background: 'pink',
-				}
-			 },
-			 {
-				title: '1212',
-				start: '2016-11-21 08:30',
-				end: '2016-11-27 09:30',
-				styles: {
-					background: 'black',
-				}
-			},
+			//  {
+			// 	title: '0000',
+			// 	start: '2016-11-21 09:30',
+			// 	end: '2016-11-21 10:00',
+			// 	styles: {
+			// 		background: 'pink',
+			// 	}
+			//  },
+			//  {
+			// 	title: '1212',
+			// 	start: '2016-11-21 08:30',
+			// 	end: '2016-11-27 09:30',
+			// 	styles: {
+			// 		background: 'black',
+			// 	}
+			// },
         ]
 	});
 
