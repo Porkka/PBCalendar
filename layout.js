@@ -98,7 +98,7 @@ $(function() {
 			// 	}
 			// },
         ]
-	});
+	}, true);
 
 
 	$('#calendar').on('onEntryResized', function(e, entry, plugin) {

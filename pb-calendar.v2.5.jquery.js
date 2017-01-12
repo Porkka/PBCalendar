@@ -334,20 +334,6 @@
         bindEvents: function() {
             var plugin = this;
 
-            plugin.$element.on('click' + '.' + plugin._name, '.slot.time', function(e) {
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-                var $target = $(e.target);
-                if(!$target.hasClass('slot')) {
-                    $target = $target.closest('.slot');
-                }
-                if(plugin.options.mode != 'view') {
-                    plugin._startDateSelect(e, $target);
-                } else {
-                    plugin._selectDate(e, $target);
-                }
-            });
-
 /*** Entry events ***/
             plugin.$element.on('click' + '.' + plugin._name, 'a.pb-read-more', function(e) {
                 e.stopPropagation();
@@ -364,7 +350,6 @@
                 plugin.flags.mouse.up = true;
                 plugin.flags.mouse.down = false;
                 plugin.resetSelections();
-
 
                 var entry = plugin.getEntryByGUID($(this).attr('data-guid'));
                 plugin.selections.entry = $(this);
@@ -465,7 +450,7 @@
                     plugin.backlog.entry = plugin.clone(plugin.getEntryByGUID(guid));
                 }
             });
-/*** TD events ***/
+/*** Slot events ***/
             plugin.$element.on('mousedown' + '.' + plugin._name, 'td', function(e) {
                 if(plugin.detectLeftButton(e)) {
                     if(plugin.debug) {
@@ -476,7 +461,6 @@
                 }
             });
             plugin.$element.on('mouseup' + '.' + plugin._name, 'td', function(e) {
-
                 // Check for other actions
                 if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryMoveConfirm()) {
@@ -518,10 +502,22 @@
                     start = end;
                     end = tmp; 
                 }
-
-                var trigger = [ { start: moment(start), end: moment(end) }, plugin.selections, plugin ];
-                plugin.$element.trigger('onRangeSelected', trigger);
-
+            });
+            plugin.$element.on('click' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
+                if(plugin.debug) {
+                    console.log('down');
+                }
+                clearTimeout(plugin.timers.mouse);
+                // Set flags
+                plugin.flags.mouse.up = true;
+                plugin.flags.mouse.down = false;
+                // Set selections
+                plugin.selections.start = $(this);
+                if(!plugin.selections.end) {
+                    plugin.selections.end = $(this);
+                }
+                plugin.doSelections(e, $(this));
+                plugin._triggerRangeSelected();
             });
             plugin.$element.on('mousedown' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
                 e.stopPropagation();
@@ -555,7 +551,7 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 setTimeout(function() {
-                    if(plugin.selections.start && plugin.selections.end && plugin.detectLeftButton(e)) {
+                    if(plugin.selections.start && plugin.selections.end) {
                         var start = parseInt(plugin.selections.start.attr('data-timestamp')) * 1000;
                         var end = parseInt(plugin.selections.end.attr('data-timestamp')) * 1000;
                         plugin._triggerRangeSelected();
@@ -620,8 +616,8 @@
 /*** TRIGGERS - Slots ***/
         _triggerRangeSelected: function() {
             var range = {
-                start: this.getEntryByGUID(this.selections.start.attr('guid')),
-                end: this.getEntryByGUID(this.selections.end.attr('guid')),
+                start: moment(this.selections.start.attr('data-timestamp') * 1000),
+                end: moment(this.selections.end.attr('data-timestamp') * 1000),
             };
             this.$element.trigger('onRangeSelected', [ range, this ]);  
         },
@@ -822,7 +818,7 @@
 
 
         doSelections: function(e, $slot) {
-            if(!this.active_actions.resizing && this.selections.start && this.detectLeftButton(e)) {
+            if(!this.active_actions.resizing && this.selections.start) {
                 this.selections.end = $slot;
                 var start = parseInt(this.selections.start.attr('data-timestamp')) * 1000;
                 var end = parseInt(this.selections.end.attr('data-timestamp')) * 1000;
