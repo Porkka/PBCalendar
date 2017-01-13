@@ -615,10 +615,26 @@
         },
 /*** TRIGGERS - Slots ***/
         _triggerRangeSelected: function() {
+
             var range = {
                 start: moment(this.selections.start.attr('data-timestamp') * 1000),
                 end: moment(this.selections.end.attr('data-timestamp') * 1000),
             };
+
+            if(this.options.calendar_type != 'month') {
+                var intervals = this.options.hour_interval.split(':');
+                var hours = (intervals.length >= 1) ? parseInt(intervals[0]) : 0;
+                var minutes = (intervals.length >= 2) ? parseInt(intervals[1]) : 0;
+                var seconds = (intervals.length >= 3) ? parseInt(intervals[2]) : 0;
+
+                if(!hours && !minutes) {
+                    console.log('Invalid hour interval');
+                    return;
+                }
+                range.end.add(hours, 'hours').add(minutes, 'minutes').add(seconds, 'seconds');
+            }
+
+
             this.$element.trigger('onRangeSelected', [ range, this ]);  
         },
 
@@ -1028,7 +1044,7 @@
                 }
                 // Set position
                 $entry.css('top', $slots.first().offset().top);
-                $entry.css('height', parseInt($slots.css('height')) * $slots.length );
+                $entry.css('height', parseInt($slots.css('height')) * ($slots.length-1) );
                 $entry.css('left', base_offset + (offset));
                 $container.append($entry);
                 $entries.push($entry);
@@ -1611,6 +1627,7 @@
                 var tmp = moment.clone();
                 var start = tmp.isoWeekday(1).clone();
                 var end = tmp.endOf('week').clone();
+
                 var $cells = $();
                 // Loop trough the week
                 while(start.format('d') != end.format('d')) {
