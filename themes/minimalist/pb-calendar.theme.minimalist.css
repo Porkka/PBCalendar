@@ -1,0 +1,112 @@
+/*** === THEME SPECIFIC === ***/
+.pb-calendar.minimalist .entry-indicator {
+	top: 0;
+	right: 0;
+	padding: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	position: absolute;
+	background-color: #FF646A; 
+}
+
+
+/*** === CORE SKELETON === ***/
+.pb-calendar.minimalist {
+	margin: 0 auto;
+}
+.pb-calendar.minimalist .entry:hover {
+}
+.pb-calendar.minimalist .table {
+}
+.pb-calendar.minimalist table {
+	width: auto;
+}
+.pb-calendar.minimalist table th {
+}
+.pb-calendar.minimalist .pb-title {
+	text-transform: uppercase;
+}
+.pb-calendar.minimalist .pb-nav {
+	display: block;
+}
+.pb-calendar.minimalist .pb-nav.prev {
+	float: left;
+	margin-left: 20px;
+}
+.pb-calendar.minimalist .pb-nav.next {
+	float: right;
+	margin-right: 20px;
+}
+.pb-calendar.minimalist table .day-name-row {
+}
+.pb-calendar.minimalist table .day-name-row th {
+	width: 45px;
+	height: 40px;
+	border-radius: 50%;
+	align-items: center;
+	display: inline-flex;
+	margin: 0 3px 0 3px;
+	justify-content: center;
+}
+.pb-calendar.minimalist table td.pb-time {
+}
+.pb-calendar.minimalist table td {
+	width: 45px;
+	height: 45px;
+	cursor: pointer;
+	border-radius: 50%;
+	align-items: center;
+	display: inline-flex;
+	margin: 0 3px 5px 3px;
+	justify-content: center;
+	transition: 0.15s background-color;
+}
+.pb-calendar.minimalist table td:hover {
+	color: #323232;
+	background-color: #D7F5E2;
+}
+.pb-calendar.minimalist .pb-today {
+	color: #323232;
+	border-color: #FF8F00;
+}
+.pb-calendar.minimalist td.selected {
+    color: #FFFFFF !important;
+	border-color: #6AFFA2 !important;
+    background-color: #45D27A !important;
+}
+.pb-calendar.minimalist table td span {
+}
+.pb-calendar.minimalist table td span:not(.entry) {
+}
+/*** === /CORE SKELETON === ***/
+
+
+/*** === MODIFIERS === ***/
+.pb-calendar.minimalist table td.pb-past span:not(.entry) {
+}
+.pb-calendar.minimalist table td.pb-prev-month span:not(.entry),
+.pb-calendar.minimalist table td.pb-next-month span:not(.entry) {
+}
+/*** === /MODIFIERS === ***/
+
+/*** === MONTH === ***/
+.pb-calendar.minimalist a.pb-read-more {
+}
+.pb-calendar.minimalist .pb-read-more-container {
+}
+.pb-calendar.minimalist .pb-read-more-container .entry {
+}
+.pb-calendar.minimalist .week .pb-resizer {
+}
+.pb-calendar.minimalist .month .pb-resizer {
+}
+
+/*** === /MONTH === ***/
+
+@media screen and (max-width: 1200px) {
+
+	.pb-calendar.container {
+	}
+
+}

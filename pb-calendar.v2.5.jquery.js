@@ -57,7 +57,7 @@
     var d = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0);
     $.fn.PBCalendar.defaults = {
         locale: 'en',
-        mode: 'view',
+        theme: null,
         entry_limit: 3,
         day_start: '08:00',
         day_end: '23:59',
@@ -132,7 +132,7 @@
                 console.log('Moved to month', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.add(1, 'months').clone()
+                date: plugin.data.selected_day.add(1, 'months').clone()
             });
         } else {
             console.log('$.fn.nextMonth: PBCalendar not found!');
@@ -146,7 +146,7 @@
                 console.log('Moved to week', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.add(1, 'weeks').clone()
+                date: plugin.data.selected_day.add(1, 'weeks').clone()
             });
         } else {
             console.log('$.fn.nextWeek: PBCalendar not found!');
@@ -160,7 +160,7 @@
                 console.log('Moved to day', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.add(1, 'days').clone()
+                date: plugin.data.selected_day.add(1, 'days').clone()
             });
         } else {
             console.log('$.fn.nextMonth: PBCalendar not found!');
@@ -174,7 +174,7 @@
                 console.log('Moved to month', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.subtract(1, 'months').clone()
+                date: plugin.data.selected_day.subtract(1, 'months').clone()
             });
         } else {
             console.log('$.fn.prevMonth: PBCalendar not found!');
@@ -188,7 +188,7 @@
                 console.log('Moved to week', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.subtract(1, 'weeks').clone()
+                date: plugin.data.selected_day.subtract(1, 'weeks').clone()
             });
         }
     };
@@ -200,7 +200,7 @@
                 console.log('Moved to date', plugin.data.selected_date);
             }
             plugin.reload({
-                date: plugin.data.today.subtract(1, 'days').clone()
+                date: plugin.data.selected_day.subtract(1, 'days').clone()
             });
         }
     };
@@ -226,6 +226,11 @@
         } else {
             console.log('$.fn.clearSelections: PBCalendar not found!');
         }
+    };
+
+
+    $.PBExtend = function(methods) {
+        $.extend(PBCalendar.prototype, methods);
     };
 
 
@@ -300,6 +305,9 @@
             this.$element.addClass(this.options.render_mode);
             this.$element.addClass(this.options.view_mode);
             this.$element.addClass(this.options.calendar_type);
+            if(this.options.theme) {
+                this.$element.addClass(this.options.theme);
+            }
             // Element selector
             this.elementSelector = '';
             if(!this.element.id) { // Generate id
@@ -313,8 +321,7 @@
             }
 
             this.$element.addClass('pb-calendar');
-            this.data.today = moment(this.options.date);
-            this.data.today.locale(this.options.locale);
+            this.data.today = moment().clone();
             this.data.today.locale(this.options.locale);
 
             var start = this.options.day_start.split(':');
@@ -322,11 +329,9 @@
             var minutes  = (start.length >= 2) ? parseInt(start[1]) : 0;
             var seconds  = (start.length >= 3) ? parseInt(start[2]) : 0;
             this.data.today.hours(0).minutes(0).seconds(0);
-
             this.data.selected_day = moment(this.options.date).clone();
             this.data.selected_day.hours(hours).minutes(minutes).seconds(seconds);
             this.data.selected_day.locale(this.options.locale);
-            this.data.today.locale(this.options.locale);
             this.data.times = [ this.data.selected_day.clone() ];
         },
 
@@ -953,20 +958,6 @@
         },
 
 
-        renderSimple: function() {
-            var entries = this.options.entries;
-            for(var ent in entries) {
-                var entry = entries[ent];
-                var $slots = this.getCalendarSlotInTimestampRange( moment(entry.start).format('X'), moment(entry.end).format('X'));
-                var $spn = $slots.first().find('span');
-                $spn.html(entry.title);
-                $slots.find('span').addClass('entry');
-                $slots.find('span').css('background', entry.color);
-                $slots.find('span').attr('title', 'Klo ' + moment(entry.start).format('HH:mm') + ' - ' + moment(entry.end).format('HH:mm'));
-            }
-        },
-  
-
         renderNormal: function() {
             var entries = this.options.entries;
             // Contains all the calendar's entries
@@ -1449,6 +1440,7 @@
 
         _renderAgendaMonth: function(times) {
 
+            var today = this.data.today.format('l');
             var date_now = this.data.selected_day.format('l');
             var stamp_now = this.data.selected_day.format('X');
             var month_no_now = this.data.selected_day.format('M');
@@ -1480,7 +1472,7 @@
                 }
 
                 // Today class
-                if(times[t].format('l') == date_now) {
+                if(times[t].format('l') == today) {
                     $cell.addClass('pb-today');
                 }
 
@@ -1545,7 +1537,7 @@
                 var $header_content = '<a href="#" class="pb-nav prev">' + this.options.prev_nav + '</a>' + 
                 '<span class="pb-title">' + range + '</span>' +
                 '<a href="#" class="pb-nav next">' + this.options.next_nav + '</a>';
-                var $row = $('<tr class="heading-row">').append($cells);
+                var $row = $('<tr class="heading-row day-name-row">').append($cells);
 
                 $header_content = $('<tr class="heading-row"><th colspan="8">' + $header_content + '</th></tr>');
                 $header_content = $header_content.add($row);
@@ -1557,7 +1549,7 @@
                 '<span class="pb-title">'  + moment.format('dddd') + ' ' + moment.format('l') + '</span>' +
                 '<a href="#" class="pb-nav next">' + this.options.next_nav + '</a>';
 
-                return $('<tr class="heading-row"><th colspan="2">' + $header_content + '</th></tr>');
+                return $('<tr class="heading-row day-name-row"><th colspan="2">' + $header_content + '</th></tr>');
             }
         },
 
@@ -1597,7 +1589,7 @@
             var $header_content = '<a href="#" class="pb-nav prev">' + this.options.prev_nav + '</a>' + 
                 '<span class="pb-title">' + range + '</span>' +
                 '<a href="#" class="pb-nav next">' + this.options.next_nav + '</a>';
-            var $row = $('<tr class="heading-row">').append($cells);
+            var $row = $('<tr class="heading-row day-name-row">').append($cells);
 
             $header_content = $('<tr class="heading-row"><th colspan="8">' + $header_content + '</th></tr>');
             $header_content = $header_content.add($row);

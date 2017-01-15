@@ -1,13 +1,15 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" href="pb-calendar.css">
-	    <meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 	<body>
 
-		<div id="calendar"></div>
+		<div class="container">
+			<div id="calendar"></div>
+		</div>
 
 		<script src="jquery.js"></script>
 		<script src="bootstrap-datepicker.js"></script>
@@ -15,7 +17,77 @@
 		<script src="moment.js"></script>
 		<script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
 		<script src="pb-calendar.v2.5.jquery.js"></script>
-		<script src="layout.js"></script>
+		<script>
+		$(function() {
+			$('#calendar').PBCalendar({
+				locale: 'fi',
+				hour_interval: '00:30',
+				calendar_type: 'month',
+				render_mode: 'normal',
+				date: '2016-11-22',
+				theme: 'minimalist',
+				dayStart: '00:00', 
+				onEntryRender: function(entry, $element) {
+					if(entry.color) {
+						$element.css('background-color', entry.color);
+					}
+					$element.attr('data-link_id', entry.link_id);
+					$element.html( entry.time_from + ' - ' + entry.time_to + '<br>' + entry.name );
+					$element.attr('data-toggle', 'modal');
+					$element.attr('data-target', '#' + entry.event_id + '_event_modal');
+					$element.html( entry.time_from + ' - ' + entry.time_to + '<br>' + entry.name );
+					return $element;
+				},
+				breakpoints: {
+					640: {
+						calendar_type: 'day'
+					}
+				},
+				entries: [
+					 {
+						title: '0000',
+						start: '2016-11-21 09:30',
+						end: '2016-11-21 10:00',
+						styles: {
+							background: 'red',
+						}
+					 },
+					 {
+						title: '0000',
+						start: '2016-11-21 09:30',
+						end: '2016-11-21 10:00',
+						styles: {
+							background: 'green',
+						}
+					 },
+					 {
+						title: '0000',
+						start: '2016-11-21 09:30',
+						end: '2016-11-21 10:30',
+						styles: {
+							background: 'brown',
+						}
+					 },
+		        ]
+			}, true);
+
+
+			$('#calendar').on('onEntryResized', function(e, entry, plugin) {
+				console.log('Resized: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryMoved', function(e, entry, plugin) {
+				console.log('Moved: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryClick', function(e, entry, plugin) {
+				console.log('Click: ', e, entry, plugin);
+			});
+			$('#calendar').on('onRangeSelected', function(e, range, plugin) {
+				console.log('Range selected: ', e, range, plugin);
+			});
+
+
+		});
+		</script>
 
 	</body>
 </html>

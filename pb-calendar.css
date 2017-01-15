@@ -29,6 +29,14 @@
 	height: 20px;
 	text-align: center;
 }
+.pb-calendar .pb-nav {
+}
+.pb-calendar .pb-nav.prev {
+}
+.pb-calendar .pb-nav.next {
+}
+.pb-calendar table .day-name-row {
+}
 .pb-calendar table .day-title {
 	text-transform: uppercase;
 }
@@ -55,17 +63,11 @@
 	padding: 10px 0;
 	text-align: center;
 }
-.pb-calendar table td span:not(.entry) {
-	width: 100%;
-	height: 100%;
-	background-color: green;
-}
 /*** === /CORE SKELETON === ***/
 
 
 /*** === MODIFIERS === ***/
 .pb-calendar table td.pb-past span:not(.entry) {
-
 }
 .pb-calendar table td.pb-prev-month span:not(.entry),
 .pb-calendar table td.pb-next-month span:not(.entry) {
