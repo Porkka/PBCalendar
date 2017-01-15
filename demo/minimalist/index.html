@@ -1,0 +1,164 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link href="https://fonts.googleapis.com/css?family=Dosis:300" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Work+Sans:300" rel="stylesheet">
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../../pb-calendar.css">
+		<link rel="stylesheet" href="../../themes/minimalist/pb-calendar.theme.minimalist.css">
+		<link rel="stylesheet" href="style.css">
+		
+	</head>
+	<body>
+
+		<div class="container">
+
+			<div class="welcome-screen text-center">
+				<h1>
+					<a href="" class="start-reservation">Your Table Reservations<br><small>Click to Start</small></a>
+				</h1>
+			</div>
+
+			<div class="search">
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="selection">
+							<div class="row">
+								<div class="col-sm-8">
+									<div class="selection-header">
+										<h4 class="day-name">Tuesday</h4>
+										<h3 class="month-year">January 2016</h3>
+										<h2 class="date-d">23</h2>
+									</div>
+								</div>
+								<div class="col-sm-4">
+									<div class="cal-navigation">
+										<a href="#"> &laquo; </a>
+										<a href="#"> &raquo; </a>
+									</div>
+								</div>
+							</div>
+							<div class="resources">
+								<div class="row">
+									<div class="col-sm-3">
+										<a href="#" class="resource">
+											<div class="name">Table for 1</div>
+										</a>
+									</div>
+									<div class="col-sm-3">
+										<a href="#" class="resource">
+											<div class="name">Table for 2</div>
+										</a>
+									</div>
+									<div class="col-sm-3">
+										<a href="#" class="resource">
+											<div class="name">Table for 3</div>
+										</a>
+									</div>
+									<div class="col-sm-3">
+										<a href="#" class="resource">
+											<div class="name">Table for 4</div>
+										</a>
+									</div>
+									<div class="col-sm-3">
+										<a href="#" class="resource">
+											<div class="name">Table for 5</div>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-6">
+						<div id="calendar"></div>
+					</div>
+				</div>
+			</div>
+	
+
+			<div class="available-resources">
+				
+			</div>
+
+		</div>
+
+
+		<script src="../../jquery.js"></script>
+		<script src="../../bootstrap-datepicker.js"></script>
+		<script src="../../bootstrap-datepicker.fi.js"></script>
+		<script src="../../moment.js"></script>
+		<script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+		<script src="../../pb-calendar.v2.5.jquery.js"></script>
+		<script src="../../themes/minimalist/pb-calendar.minimalist.jquery.js"></script>
+
+		<script>
+		$(function() {
+			$('#calendar').PBCalendar({
+				locale: 'fi',
+				hour_interval: '00:30',
+				calendar_type: 'month',
+				render_mode: 'normal',
+				date: '2017-01-14',
+				theme: 'minimalist',
+				dayStart: '00:00', 
+				prev_nav: '<span class="glyphicon glyphicon-menu-left"></span>',
+				next_nav: '<span class="glyphicon glyphicon-menu-right"></span>',
+				onEntryRender: function(entry, $element) {
+					if(entry.color) {
+						$element.css('background-color', entry.color);
+					}
+					$element.attr('data-link_id', entry.link_id);
+					$element.html( entry.time_from + ' - ' + entry.time_to + '<br>' + entry.name );
+					$element.attr('data-toggle', 'modal');
+					$element.attr('data-target', '#' + entry.event_id + '_event_modal');
+					$element.html( entry.time_from + ' - ' + entry.time_to + '<br>' + entry.name );
+					return $element;
+				},
+				breakpoints: {
+					640: {
+						calendar_type: 'day'
+					}
+				},
+				entries: [
+					 {
+						title: '0000',
+						start: '2017-01-21 09:30',
+						end: '2017-01-21 10:00',
+						styles: {
+							background: 'red',
+						}
+					 },
+					 {
+						title: '0000',
+						start: '2017-01-01 09:30',
+						end: '2017-01-01 10:00',
+						styles: {
+							background: 'green',
+						}
+					 }
+		        ]
+			}, true);
+
+
+			$('#calendar').on('onEntryResized', function(e, entry, plugin) {
+				console.log('Resized: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryMoved', function(e, entry, plugin) {
+				console.log('Moved: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryClick', function(e, entry, plugin) {
+				console.log('Click: ', e, entry, plugin);
+			});
+			$('#calendar').on('onRangeSelected', function(e, range, plugin) {
+				console.log('Range selected: ', e, range, plugin);
+			});
+
+
+		});
+		</script>
+
+	</body>
+</html>

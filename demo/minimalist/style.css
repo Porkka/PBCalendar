@@ -1,0 +1,82 @@
+.welcome-screen a {
+	color: #323232;
+}
+.welcome-screen {
+	font-weight: 300;
+	margin-bottom: 52px;
+	font-family: 'Dosis', sans-serif;
+}
+.welcome-screen h1 {
+	font-size: 52px;
+	font-weight: 300;
+	font-family: 'Dosis', sans-serif;
+}
+.selection {
+    color: #FFFFFF;
+    font-weight: 300;
+    padding: 50px 30px;
+    border-radius: 5px;
+	background-color: #45D27A;
+	font-family: 'Work Sans', sans-serif;
+    box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.25);
+}
+.selection a {
+    color: #FFFFFF;
+}
+.selection .day-name,
+.selection .month-year,
+.selection .date-d {
+	margin: 0 0 0 0;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.selection .day-name {
+	font-size: 22px;
+}
+.selection .month-year {
+	font-size: 42px;
+	font-weight: 300;
+	margin: 14px 0 2px 0;
+}
+.selection .date-d {
+	margin: 14px 0;
+	font-size: 56px;
+	font-weight: 300;
+}
+.selection .cal-navigation {
+	line-height: 0;
+	font-size: 42px;
+	text-align: right;
+	padding-right: 30px;
+}
+.resources .resource {
+	display: block;
+	font-size: 16px;
+	font-weight: 600;
+	padding: 3px 5px;
+	border-radius: 4px;
+	text-align: center;
+	margin: 0 0 12px 0;
+	border: 1px solid #FFFFFF;
+	text-decoration: none !important;
+}
+.resources .resource:hover,
+.resources .resource:active {
+
+}
+.resources .row {
+	margin-left: -5px;
+	margin-right: -5px;
+}
+.resources div[class^="col-"] {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+
+.pb-calendar.minimalist table .day-title {
+	color: #45D27A;
+}
+.pb-calendar.minimalist .pb-today {
+	border-color: #45D27A;
+}
