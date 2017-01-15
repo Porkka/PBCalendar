@@ -626,6 +626,9 @@
                 end: moment(this.selections.end.attr('data-timestamp') * 1000),
             };
 
+            range.start.locale( this.options.locale );
+            range.end.locale( this.options.locale );
+
             if(this.options.calendar_type != 'month') {
                 var intervals = this.options.hour_interval.split(':');
                 var hours = (intervals.length >= 1) ? parseInt(intervals[0]) : 0;
@@ -638,7 +641,6 @@
                 }
                 range.end.add(hours, 'hours').add(minutes, 'minutes').add(seconds, 'seconds');
             }
-
 
             this.$element.trigger('onRangeSelected', [ range, this ]);  
         },

@@ -18,75 +18,228 @@
 
 			<div class="welcome-screen text-center">
 				<h1>
-					<a href="" class="start-reservation">Your Table Reservations<br><small>Click to Start</small></a>
+					Your Table Reservations<br>
+					<small>Start by selecting day and time of arrival</small>
 				</h1>
 			</div>
 
 			<div class="search">
 				<div class="row">
-					<div class="col-sm-6">
+					<div class="col-md-offset-1 col-md-4 text-right">
+						<div id="calendar" class=""></div>
+					</div>
+					<div class="col-md-7">
 						<div class="selection">
 							<div class="row">
-								<div class="col-sm-8">
-									<div class="selection-header">
-										<h4 class="day-name">Tuesday</h4>
-										<h3 class="month-year">January 2016</h3>
-										<h2 class="date-d">23</h2>
+								<div class="col-lg-7">
+									<h4 class="month-year">January 2017</h4>
+									<h2 class="date-d">25 Wednesday</h2>
+									<div class="arrival">
+										<h3 style="margin-top: 0;">Time of arrival</h3>
+										<div class="clock-inputs" style="width: 250px;">
+											<div class="input-group">
+												<div class="input-group-addon inverse"><div class="glyphicon glyphicon-time"></div></div>
+												<select name="from-time" class="form-control text-center inverse" style="">
+													<option value="12">10</option>
+													<option value="11">11</option>
+													<option value="12">12</option>
+													<option value="13">13</option>
+													<option value="14">14</option>
+													<option value="15">15</option>
+													<option value="16">16</option>
+													<option value="17">17</option>
+													<option value="18">18</option>
+													<option value="19">19</option>
+													<option value="20">20</option>
+													<option value="21">21</option>
+													<option value="22">22</option>
+													<option value="23">23</option>
+												</select>
+												<div class="input-group-addon inverse">:</div>
+												<select name="to-time" class="form-control text-center inverse">
+													<option value="00">00</option>
+													<option value="15">15</option>
+													<option value="20">20</option>
+													<option value="30">30</option>
+													<option value="35">35</option>
+													<option value="40">40</option>
+													<option value="45">45</option>
+													<option value="50">50</option>
+													<option value="55">45</option>
+												</select>
+											</div>
+										</div>
 									</div>
 								</div>
-								<div class="col-sm-4">
-									<div class="cal-navigation">
-										<a href="#"> &laquo; </a>
-										<a href="#"> &raquo; </a>
-									</div>
-								</div>
-							</div>
-							<div class="resources">
-								<div class="row">
-									<div class="col-sm-3">
-										<a href="#" class="resource">
-											<div class="name">Table for 1</div>
-										</a>
-									</div>
-									<div class="col-sm-3">
-										<a href="#" class="resource">
-											<div class="name">Table for 2</div>
-										</a>
-									</div>
-									<div class="col-sm-3">
-										<a href="#" class="resource">
-											<div class="name">Table for 3</div>
-										</a>
-									</div>
-									<div class="col-sm-3">
-										<a href="#" class="resource">
-											<div class="name">Table for 4</div>
-										</a>
-									</div>
-									<div class="col-sm-3">
-										<a href="#" class="resource">
-											<div class="name">Table for 5</div>
-										</a>
-									</div>
+								<div class="form-group col-sm-8 col-lg-5">
+									<h3 style="margin-top: 0;">Serving</h3>
+										<select name="serving" id="serving" class="form-control text-center inverse">
+											<option value="1">Lunch</option>
+											<option value="2">Dinner</option>
+										</select>
+									<h3>Party Size</h3>
+										<select name="eating-type" class="form-control text-center inverse">
+											<option value="1">1</option>
+											<option value="2">2</option>
+											<option value="3">3</option>
+											<option value="4">4</option>
+											<option value="5">5</option>
+										</select>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="col-sm-6">
-						<div id="calendar"></div>
-					</div>
 				</div>
 			</div>
-	
 
-			<div class="available-resources">
-				
+
+			<div class="reservation-list">
+				<h2 class="text-center">
+					Available reservations closest to<br>
+					<small class="reservation-q">Wed 25, January 2017</small>
+				</h2>
+				<div class="collection lg-list">
+					<div class="overlay loading-overlay hidden">
+						<div class="text-center">
+							<div class="loader"></div>
+							<h3>Loading...</h3>
+						</div>
+					</div>
+
+					<div class="item">
+						<div class="row">
+							<div class="col-md-7">
+								<div class="row">
+									<div class="col-md-3">
+										<div class="preview-image-container">
+										<img src="restaurant-1-portrait.jpeg" alt="Restarurant">
+										<img src="http://snippetstorage.ddns.net/images/placeholder.png" alt="" class="placeholder img-responsive">
+										</div>
+									</div>
+									<div class="col-md-9">
+										<div class="item-meta">
+											<h3 class="name">
+												<a href="#">Restaurant FASDFA SDFA DF ASDFA</a>
+											</h3>
+											<div class="form-group ratings">
+												<div class="row">
+													<div class="col-sm-6">
+														<b>Rating</b><br>
+														<span class="glyphicon glyphicon-star glyph-yellow"></span>
+														<span class="glyphicon glyphicon-star-empty"></span>
+														<span class="glyphicon glyphicon-star-empty"></span>
+														<span class="glyphicon glyphicon-star-empty"></span>
+														<span class="glyphicon glyphicon-star-empty"></span>
+													</div>
+													<div class="col-sm-6">
+														<b>Price avg.</b><br>
+														<span class="glyphicon glyphicon-euro glyph-yellow"></span>
+														<span class="glyphicon glyphicon-euro glyph-yellow"></span>
+														<span class="glyphicon glyphicon-euro"></span>
+														<span class="glyphicon glyphicon-euro"></span>
+														<span class="glyphicon glyphicon-euro"></span>
+													</div>
+												</div>
+											</div>
+											<p class="address">193 Fairchild Drive, Mountain View - CA</p>
+											<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque vitae doloribus iure velit animi provident quisquam, ratione natus sapiente nostrum aperiam veritatis exercitationem accusamus dolore aspernatur quas odio ducimus! Atque?</p>
+											<a href="#item-collapse-1" data-toggle="collapse" class="btn btn-default block no-radius">More details</a>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-5 text-center">
+								<h4 class="fancy-heading" style="margin-top: 0">Make an Reservation</h4>
+								<div class="row">
+									<div class="col-sm-4">
+										<b style="display: block;margin-bottom: 8px;">22.01.2017</b>
+										<a href="#" class="badge-sm badge-white no-radius">12:00</a>
+										<a href="#" class="badge-sm badge-white no-radius">12:30</a>
+										<a href="#" class="badge-sm badge-white no-radius">13:00</a>
+										<a href="#" class="badge-sm badge-white no-radius">13:30</a>
+										<a href="#" class="badge-sm hidden-md badge-white no-radius">14:00</a>
+										<a href="#" class="badge-sm hidden-md badge-white no-radius">14:30</a>
+									</div>
+									<div class="col-sm-4">
+										<b style="display: block;margin-bottom: 8px;">23.01.2017</b>
+										<a href="#" class="badge-sm badge-white no-radius">12:00</a>
+										<a href="#" class="badge-sm badge-white no-radius">12:30</a>
+										<a href="#" class="badge-sm badge-white no-radius">13:00</a>
+										<a href="#" class="badge-sm badge-white no-radius">13:30</a>
+										<a href="#" class="badge-sm hidden-md badge-white no-radius">14:00</a>
+										<a href="#" class="badge-sm hidden-md badge-white no-radius">14:30</a>
+									</div>
+									<div class="col-sm-4">
+										<b style="display: block;margin-bottom: 8px;">24.01.2017</b>
+										<p><i>Closed</i></p>
+									</div>
+								</div>
+								<a href="#" class="btn btn-primary no-radius block">Look for some other time...</a>
+							</div>
+						</div>
+					</div>
+					<div id="item-collapse-1" class="tech-info collapse	">
+						<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3169.331263101817!2d-122.06136978451529!3d37.405644379828225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb76af10a48f5%3A0x79014f89e344f717!2s193+Fairchild+Dr%2C+Mountain+View%2C+CA+94043%2C+Yhdysvallat!5e0!3m2!1sfi!2sfi!4v1484470751694" width="100%" height="250" frameborder="0" style="border:0"></iframe>
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="responsive-table">
+									<table class="table">
+										<tr>
+											<td>Website</td><td><a href="https://www.google.com" target="_blank">https://www.google.com</a></td>
+										</tr>
+										<tr>
+											<td>Type</td><td>Brunch, Lunch, Dinner</td>
+										</tr>
+										<tr>
+											<td>Alcohol</td><td>Cocktails</td>
+										</tr>
+										<tr>
+											<td>Credit-cards</td><td>Yes</td>
+										</tr>
+										<tr>
+											<td>Wi-Fi</td><td>Yes</td>
+										</tr>
+										<tr>
+											<td>Outdoor Seating</td><td>No</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div class="responsive-table">
+									<table class="table">
+										<tr>
+											<td>Website</td><td><a href="https://www.google.com" target="_blank">https://www.google.com</a></td>
+										</tr>
+										<tr>
+											<td>Type</td><td>Brunch, Lunch, Dinner</td>
+										</tr>
+										<tr>
+											<td>Alcohol</td><td>Cocktails</td>
+										</tr>
+										<tr>
+											<td>Credit-cards</td><td>Yes</td>
+										</tr>
+										<tr>
+											<td>Wi-Fi</td><td>Yes</td>
+										</tr>
+										<tr>
+											<td>Outdoor Seating</td><td>No</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
 			</div>
 
 		</div>
 
 
 		<script src="../../jquery.js"></script>
+		<script src="../../bootstrap.3.3.7.js"></script>
 		<script src="../../bootstrap-datepicker.js"></script>
 		<script src="../../bootstrap-datepicker.fi.js"></script>
 		<script src="../../moment.js"></script>
@@ -97,7 +250,6 @@
 		<script>
 		$(function() {
 			$('#calendar').PBCalendar({
-				locale: 'fi',
 				hour_interval: '00:30',
 				calendar_type: 'month',
 				render_mode: 'normal',
@@ -123,22 +275,22 @@
 					}
 				},
 				entries: [
-					 {
-						title: '0000',
-						start: '2017-01-21 09:30',
-						end: '2017-01-21 10:00',
-						styles: {
-							background: 'red',
-						}
-					 },
-					 {
-						title: '0000',
-						start: '2017-01-01 09:30',
-						end: '2017-01-01 10:00',
-						styles: {
-							background: 'green',
-						}
-					 }
+					 // {
+						// title: '0000',
+						// start: '2017-01-21 09:30',
+						// end: '2017-01-21 10:00',
+						// styles: {
+						// 	background: 'red',
+						// }
+					 // },
+					 // {
+						// title: '0000',
+						// start: '2017-01-01 09:30',
+						// end: '2017-01-01 10:00',
+						// styles: {
+						// 	background: 'green',
+						// }
+					 // }
 		        ]
 			}, true);
 
@@ -154,7 +306,23 @@
 			});
 			$('#calendar').on('onRangeSelected', function(e, range, plugin) {
 				console.log('Range selected: ', e, range, plugin);
+				console.log(range.start.format('D'));
+				$('.month-year').html( range.start.format('MMMM') + ' ' + range.start.format('YYYY') );
+				$('.date-d').html( range.start.format('D') + ' ' + range.start.format('dddd') );
 			});
+
+
+			// 
+			$(document).on('click', '.reservation-list a[data-toggle="collapse"]', function() {
+				var $target = $($(this).attr('href'));
+				if($target.length) {
+					if(!$target.hasClass('in')) {
+						$('html, body').animate({ scrollTop: $target.offset().top });
+					}
+				}
+			});
+
+
 
 
 		});
