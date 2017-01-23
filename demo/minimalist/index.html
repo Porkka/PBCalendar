@@ -3,9 +3,7 @@
 		<meta charset="UTF-8">
 	    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<link href="https://fonts.googleapis.com/css?family=Dosis:300" rel="stylesheet">
-		<link href="https://fonts.googleapis.com/css?family=Work+Sans:300" rel="stylesheet">
-
+		<link href="https://fonts.googleapis.com/css?family=Work+Sans:300|Dosis:300" rel="stylesheet">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 		<link rel="stylesheet" href="../../pb-calendar.css">
 		<link rel="stylesheet" href="../../themes/minimalist/pb-calendar.theme.minimalist.css">
@@ -269,28 +267,23 @@
 					$element.html( entry.time_from + ' - ' + entry.time_to + '<br>' + entry.name );
 					return $element;
 				},
-				breakpoints: {
-					640: {
-						calendar_type: 'day'
-					}
-				},
 				entries: [
-					 // {
-						// title: '0000',
-						// start: '2017-01-21 09:30',
-						// end: '2017-01-21 10:00',
-						// styles: {
-						// 	background: 'red',
-						// }
-					 // },
-					 // {
-						// title: '0000',
-						// start: '2017-01-01 09:30',
-						// end: '2017-01-01 10:00',
-						// styles: {
-						// 	background: 'green',
-						// }
-					 // }
+					 {
+						title: '0000',
+						start: '2017-01-21 09:30',
+						end: '2017-01-21 10:00',
+						styles: {
+							background: 'red',
+						}
+					 },
+					 {
+						title: '0000',
+						start: '2017-01-01 09:30',
+						end: '2017-01-01 10:00',
+						styles: {
+							background: 'green',
+						}
+					 }
 		        ]
 			}, true);
 
