@@ -404,14 +404,15 @@
                 if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
+                        plugin.reload();
                     } else {
                         plugin.renderNormal();
                         plugin._triggerEntryMoved();
                     }
                 } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
-                        plugin.renderNormal();
                         plugin.revertEntryChanges();
+                        plugin.renderNormal();
                     } else {
                         plugin._triggerEntryResized();
                     }
@@ -484,8 +485,8 @@
                 } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
-                    } else {
                         plugin.renderNormal();
+                    } else {
                         plugin._triggerEntryResized();
                     }
                     plugin.resetSelections();
@@ -580,6 +581,7 @@
                     plugin.revertEntryChanges();
                 }
                 plugin.resetSelections();
+                plugin.reload();
             });
             $('.pb-calendar a.prev').on('click' + '.' + plugin._name, function(e) {
                 e.preventDefault();
