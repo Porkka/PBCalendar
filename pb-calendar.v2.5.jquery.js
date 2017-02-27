@@ -228,6 +228,12 @@
         }
     };
 
+    $.PBExtend = function(methods) {
+        $.extend(PBCalendar.prototype, methods);
+        console.log(PBCalendar.prototype);
+        // plugin method despatcher
+    };
+
 
     $.PBExtend = function(methods) {
         $.extend(PBCalendar.prototype, methods);
@@ -352,7 +358,7 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 clearTimeout(plugin.timers.mouse);
-                plugin.flags.mouse.up = true;
+                plugin.flags.mouse.up = false;
                 plugin.flags.mouse.down = false;
                 plugin.resetSelections();
 
@@ -395,18 +401,23 @@
                 e.stopPropagation();
                 e.stopImmediatePropagation();
 
+                if(plugin.debug) {
+                    console.log('Entry: Mouse up');
+                }
+
                 // Check for other actions
                 if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
+                        plugin.reload();
                     } else {
                         plugin.renderNormal();
                         plugin._triggerEntryMoved();
                     }
                 } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
-                        plugin.renderNormal();
                         plugin.revertEntryChanges();
+                        plugin.renderNormal();
                     } else {
                         plugin._triggerEntryResized();
                     }
@@ -459,7 +470,7 @@
             plugin.$element.on('mousedown' + '.' + plugin._name, 'td', function(e) {
                 if(plugin.detectLeftButton(e)) {
                     if(plugin.debug) {
-                        console.log('down');
+                        console.log('TD: down');
                     }
                     plugin.flags.mouse.down = true;
                     plugin.flags.mouse.up = false;
@@ -479,8 +490,8 @@
                 } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
-                    } else {
                         plugin.renderNormal();
+                    } else {
                         plugin._triggerEntryResized();
                     }
                     plugin.resetSelections();
@@ -510,7 +521,7 @@
             });
             plugin.$element.on('click' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
                 if(plugin.debug) {
-                    console.log('down');
+                    console.log('tr:not(.heading-row) td: Click');
                 }
                 clearTimeout(plugin.timers.mouse);
                 // Set flags
@@ -555,7 +566,10 @@
             plugin.$element.on('mouseup' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-                setTimeout(function() {
+                plugin.timers.mouse = setTimeout(function() {
+                    if(plugin.debug) {
+                        console.log('tr:not(.heading-row) td: Mouse up')
+                    }
                     if(plugin.selections.start && plugin.selections.end) {
                         var start = parseInt(plugin.selections.start.attr('data-timestamp')) * 1000;
                         var end = parseInt(plugin.selections.end.attr('data-timestamp')) * 1000;
@@ -572,6 +586,7 @@
                     plugin.revertEntryChanges();
                 }
                 plugin.resetSelections();
+                plugin.reload();
             });
             $('.pb-calendar a.prev').on('click' + '.' + plugin._name, function(e) {
                 e.preventDefault();
