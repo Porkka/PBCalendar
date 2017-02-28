@@ -1,0 +1,130 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link href="https://fonts.googleapis.com/css?family=Work+Sans:300|Dosis:300" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../../pb-calendar.css">
+		<link rel="stylesheet" href="../../themes/fullscreen/pb-calendar.theme.fullscreen.css">
+		<link rel="stylesheet" href="style.css">
+		
+	</head>
+	<body>
+
+		<div class="container">
+			<div id="calendar"></div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade xxl-modal" id="entry-modal" tabindex="-1" role="dialog" aria-labelledby="saveEntryModal">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>shor</button>
+		        <h4 class="modal-title" id="saveEntryModal">Tallenna merkintä</h4>
+		      </div>
+		      <div class="modal-body">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="form-group">
+							<label for="event-name">Tapahtuman nimi</label>
+							<input type="text" name="event[name]" class="form-control" id="event-name">
+						</div>
+						<div class="form-group">
+							<label for="event-short-description">Lyhyt kuvaus</label>
+							<textarea name="event[short_description]" class="form-control" id="event-short-description"></textarea>
+						</div>
+						<div class="form-group">
+							<label for="event-from">Tapahtuman aloitus- ja lopetusaika</label>
+							<div class="input-group">
+								<input type="datetime" name="event[from]" class="form-control" id="event-from">
+								<div class="input-group-addon">-</div>
+								<input type="datetime" name="event[to]" class="form-control" id="event-to">
+							</div>
+						</div>
+					</div>
+				</div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+
+		<script src="../../jquery.js"></script>
+		<script src="../../bootstrap.3.3.7.js"></script>
+		<script src="../../bootstrap-datepicker.js"></script>
+		<script src="../../bootstrap-datepicker.fi.js"></script>
+		<script src="../../moment.js"></script>
+		<script src="http://momentjs.com/downloads/moment-with-locales.min.js"></script>
+		<script src="../../pb-calendar.v2.5.jquery.js"></script>
+		<!-- <script src="../../themes/fullscreen/pb-calendar.fullscreen.jquery.js"></script> -->
+
+		<script>
+		$(function() {
+			$('#calendar').PBCalendar({
+				locale: 'fi',
+				hour_interval: '00:10',
+				calendar_type: 'week',
+				date: '2017-02-28',
+				theme: 'fullscreen',
+				dayStart: '08:00', 
+				prev_nav: '<span class="glyphicon glyphicon-menu-left"></span>',
+				next_nav: '<span class="glyphicon glyphicon-menu-right"></span>',
+				entries: [
+					 {
+						title: '0000',
+						start: '2017-02-27 09:30',
+						end: '2017-02-27 10:00',
+						styles: {
+							borderColor: 'red',
+						}
+					 },
+					 {
+						title: '0000',
+						start: '2017-02-28 09:30',
+						end: '2017-02-28 10:00',
+						styles: {
+							borderColor: 'green',
+						}
+					 }
+		        ]
+			}, true);
+
+
+			$('#calendar').on('onEntryResized', function(e, entry, plugin) {
+				console.log('Resized: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryMoved', function(e, entry, plugin) {
+				console.log('Moved: ', e, entry, plugin);
+			});
+			$('#calendar').on('onEntryClick', function(e, entry, plugin) {
+				console.log('Click: ', e, entry, plugin);
+			});
+			$('#calendar').on('onRangeSelected', function(e, range, plugin) {
+				$('#entry-modal').modal('show');
+
+				$('#event-from').val(range.start.format('DD.MM.Y HH:mm'));
+				$('#event-to').val(range.end.format('DD.MM.Y HH:mm'));
+
+			});
+
+
+			// 
+			$(document).on('click', '.reservation-list a[data-toggle="collapse"]', function() {
+				var $target = $($(this).attr('href'));
+				if($target.length) {
+					if(!$target.hasClass('in')) {
+						$('html, body').animate({ scrollTop: $target.offset().top });
+					}
+				}
+			});
+
+
+
+
+		});
+		</script>
+
+	</body>
+</html>

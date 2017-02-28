@@ -67,6 +67,7 @@
 
         },
         calendar_type: 'month',
+        render_mode: 'normal',
         date: d, // Calendar target date
         slot_html: '<div class="slot"></div>',
         entry_limit: 3,
@@ -1024,7 +1025,7 @@
                     continue;
                 }
                 var $first_slot = $slots.first();
-                var base_offset = $slots.first().offset().left + parseInt($slots.css('padding-left'));
+                var base_offset = $slots.first().offset().left + parseInt($slots.css('padding-left')) - plugin.$element.offset().left;
 
                 var from_stamp = start.format('X');
                 var $overlapping_entries = plugin.getEntriesInTimestampRange(from_stamp, from_stamp);
@@ -1043,9 +1044,9 @@
                     offset = $slots.width() / (o_len + 1);
                     $overlapping_entries.css('width', offset);
                     $entry.css('width', offset);
-                    $overlapping_entries.each(function(index) {
-                        $(this).css('left', base_offset + offset * index);
-                    });
+                    // $overlapping_entries.each(function(index) {
+                    //     $(this).css('left', base_offset + offset * index);
+                    // });
                     offset = offset * o_len;
                 } else {
                     $entry.css('width', $slots.width());

@@ -1,0 +1,97 @@
+/*** === CORE SKELETON === ***/
+.pb-calendar.fullscreen {
+}
+.pb-calendar.fullscreen .entry:hover {
+}
+.pb-calendar.fullscreen .table {
+}
+.pb-calendar.fullscreen table {
+	width: 100%;
+}
+.pb-calendar.fullscreen table th {
+}
+.pb-calendar.fullscreen .pb-title {
+}
+.pb-calendar.fullscreen .pb-nav {
+}
+.pb-calendar.fullscreen .pb-nav.prev {
+}
+.pb-calendar.fullscreen .pb-nav.next {
+}
+.pb-calendar.fullscreen table .day-name-row {
+}
+.pb-calendar.fullscreen table .day-name-row th {
+	padding: 5px 0;
+	font-size: 14px;
+	font-weight: 300;
+	border: 1px solid #DEDEDE;
+}
+.pb-calendar.fullscreen table td.pb-time {
+}
+.pb-calendar.fullscreen table td {
+	padding: 20px 0;
+	text-align: center;
+}
+.pb-calendar.fullscreen table td {
+	border-style: dashed;
+}
+.pb-calendar.fullscreen table td:hover {
+}
+.pb-calendar.fullscreen .pb-today {
+}
+.pb-calendar.fullscreen td.selected {
+	border-style: solid;
+	background-color: rgba(0, 158, 255, 0.40);
+	border-color: rgba(0, 158, 255, 0.80);
+}
+.pb-calendar.fullscreen table td span {
+}
+.pb-calendar.fullscreen table td span:not(.entry) {
+}
+/*** === /CORE SKELETON === ***/
+
+
+/*** === MODIFIERS === ***/
+.pb-calendar.fullscreen table td.pb-past span:not(.entry) {
+}
+.pb-calendar.fullscreen table td.pb-prev-month span:not(.entry),
+.pb-calendar.fullscreen table td.pb-next-month span:not(.entry) {
+}
+/*** === /MODIFIERS === ***/
+
+/*** === MONTH === ***/
+.pb-calendar.fullscreen a.pb-read-more {
+}
+.pb-calendar.fullscreen.month .pb-read-more-container {
+}
+.pb-calendar.fullscreen.month .pb-read-more-container .entry {
+}
+.pb-calendar.fullscreen.month .pb-resizer {
+}
+/*** === /MONTH === ***/
+
+/*** === WEEK === ***/
+.pb-calendar.fullscreen.week {
+}
+.pb-calendar.fullscreen.week .entry {
+	border: 0;
+	color: #363636;
+	border-top: 4px solid;
+	background-color: #F6F7FB;
+}
+.pb-calendar.fullscreen.week .pb-resizer {
+	height: 5px;
+	widows: 100%;
+	background-color: #DEDEDE;
+}
+/*** === /WEEK === ***/
+
+.pb-calendar.fullscreen .week .pb-resizer {
+}
+
+@media screen and (max-width: 1200px) {
+
+	.pb-calendar.container {
+	}
+
+}
