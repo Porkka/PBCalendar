@@ -32,8 +32,14 @@
 	padding: 20px 0;
 	text-align: center;
 }
+.pb-calendar.fullscreen table th,
+.pb-calendar.fullscreen table .day-name-row th,
 .pb-calendar.fullscreen table td {
-	border-style: dashed;
+	border-left: none;
+}
+.pb-calendar.fullscreen table th:last-child,
+.pb-calendar.fullscreen table tr>td:last-child {
+	border-right: none;
 }
 .pb-calendar.fullscreen table td:hover {
 }

@@ -21,7 +21,8 @@
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>shor</button>
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span class="glyphicon glyphicon-remove"></span></button>
+		        <button type="button" class="close" style="margin-right: 10px;"><span class="glyphicon glyphicon-trash"></span></button>
 		        <h4 class="modal-title" id="saveEntryModal">Tallenna merkintä</h4>
 		      </div>
 		      <div class="modal-body">
@@ -43,8 +44,37 @@
 								<input type="datetime" name="event[to]" class="form-control" id="event-to">
 							</div>
 						</div>
-					</div>
-				</div>
+						<div class="form-group">
+							<label for="event-type">Koulutuksen tyyppi</label><br>
+							<input type="radio" name="event[type]" id="event-type-normal" checked> <label for="event-type-normal" class="value">Normaali</label>
+							<input type="radio" name="event[type]" id="event-type-video"> <label for="event-type-normal" class="value">Video</label>
+						</div>
+						<div class="form-group">
+							<label for="event-color">Kalenterimerkinnän väri</label>
+							<div class="color-picker">
+								<span style="display: inline-block;border-radius: 50%;width: 16px;height: 16px;background-color: #DEDEDE;" class="selected-color"></span>
+								<div class="color-options">
+									<a href="#" style="display: inline-block;border-radius: 50%;width: 16px;height: 16px;background-color: #323232;" class="color-option"></a>
+									<a href="#" style="display: inline-block;border-radius: 50%;width: 16px;height: 16px;background-color: #FFEA08;" class="color-option"></a>
+									<a href="#" style="display: inline-block;border-radius: 50%;width: 16px;height: 16px;background-color: #800000;" class="color-option"></a>
+									<a href="#" style="display: inline-block;border-radius: 50%;width: 16px;height: 16px;background-color: #555555;" class="color-option"></a>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="event-description">Kuvaus</label>
+							<textarea name="event[description]" class="form-control" id="event-description"></textarea>
+						</div>
+						<div class="form-group">
+							<label for="event-attachments">Liitetiedostot</label>
+							<input type="file" name="event[attachments]" class="form-control" id="event-attachments">
+						</div>
+					</div> <!-- col -->
+					<div class="col-sm-4">
+						<div class="form-group">
+						</div>
+					</div> <!-- col -->
+				</div> <!-- row -->
 		      </div>
 		    </div>
 		  </div>
