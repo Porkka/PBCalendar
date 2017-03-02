@@ -73,9 +73,26 @@
         entry_limit: 3,
         breakpoints: {
             767: {
-                view_mode: 'day',
+                calendar_type: 'day',
                 entry_limit: 2
             }
+        },
+        events: {
+            move: true,
+            resize: true,
+            select: true,
+        },
+        calendar_type_names: {
+            en: {
+                day: 'Day',
+                week: 'Week',
+                month: 'Month',
+            },
+            fi: {
+                day: 'Päivä',
+                week: 'Viikko',
+                month: 'Kuukausi',
+            },
         },
         hour_interval: '00:60:00',
         onEntryResizeConfirm: function() {
@@ -229,10 +246,17 @@
         }
     };
 
+
+    $.fn.reload = function(options) {
+        var plugin = $(this).data('plugin_' + pluginName);
+        if(plugin) {
+            plugin.reload(options);
+        }
+    },
+
+
     $.PBExtend = function(methods) {
         $.extend(PBCalendar.prototype, methods);
-        console.log(PBCalendar.prototype);
-        // plugin method despatcher
     };
 
 
@@ -407,15 +431,15 @@
                 }
 
                 // Check for other actions
-                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
+                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down && plugin.options.events.move) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                         plugin.reload();
                     } else {
-                        plugin.renderNormal();
                         plugin._triggerEntryMoved();
+                        plugin.renderNormal();
                     }
-                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
+                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down && plugin.options.events.resize) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
                         plugin.renderNormal();
@@ -436,13 +460,13 @@
             plugin.$element.on('mousemove' + '.' + plugin._name, '.entry', function(e) {
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-                if(plugin.active_actions.resizing) {
+                if(plugin.active_actions.resizing && plugin.options.events.resize) {
                     var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
                     plugin.doEntryResize($this);
-                } else if(plugin.active_actions.selecting) {
+                } else if(plugin.active_actions.selecting && plugin.options.events.select) {
                     var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
                     plugin.doSelections(e, $this);
-                }  else if(plugin.active_actions.entry_moving) {
+                }  else if(plugin.active_actions.entry_moving && plugin.options.events.move) {
                     var $this = plugin.getElementFromMousePosition(e.clientX, e.clientY, $(this));
                     plugin.doEntryMove($this);
                 } 
@@ -479,7 +503,7 @@
             });
             plugin.$element.on('mouseup' + '.' + plugin._name, 'td', function(e) {
                 // Check for other actions
-                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down) {
+                if(plugin.active_actions.entry_moving && plugin.flags.mouse.down && plugin.options.events.move) {
                     if(!plugin.options.onEntryMoveConfirm()) {
                         plugin.revertEntryChanges();
                     } else {
@@ -488,7 +512,7 @@
                     }
                     plugin.resetSelections();
                     return;
-                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down) {
+                } else if(plugin.active_actions.resizing && plugin.flags.mouse.down && plugin.options.events.resize) {
                     if(!plugin.options.onEntryResizeConfirm()) {
                         plugin.revertEntryChanges();
                         plugin.renderNormal();
@@ -503,7 +527,7 @@
                 plugin.flags.mouse.up = true;
 
                 // Check selection order
-                if(!plugin.selections.start) {
+                if(!plugin.selections.start || !plugin.options.events.select) {
                     plugin.resetSelections();
                     return;
                 }
@@ -528,13 +552,15 @@
                 // Set flags
                 plugin.flags.mouse.up = true;
                 plugin.flags.mouse.down = false;
-                // Set selections
-                plugin.selections.start = $(this);
-                if(!plugin.selections.end) {
-                    plugin.selections.end = $(this);
+                if(plugin.options.events.select) {
+                    // Set selections
+                    plugin.selections.start = $(this);
+                    if(!plugin.selections.end) {
+                        plugin.selections.end = $(this);
+                    }
+                    plugin.doSelections(e, $(this));
+                    plugin._triggerRangeSelected();
                 }
-                plugin.doSelections(e, $(this));
-                plugin._triggerRangeSelected();
             });
             plugin.$element.on('mousedown' + '.' + plugin._name, 'tr:not(.heading-row) td', function(e) {
                 e.stopPropagation();
@@ -555,11 +581,11 @@
                 e.stopImmediatePropagation();
                 var $this = $(this);
                 setTimeout(function() {
-                    if(plugin.active_actions.entry_moving) {
+                    if(plugin.active_actions.entry_moving && plugin.options.events.move) {
                         plugin.doEntryMove($this);
-                    } else if(plugin.active_actions.resizing) {
+                    } else if(plugin.active_actions.resizing && plugin.options.events.resize) {
                         plugin.doEntryResize($this);
-                    } else if(plugin.active_actions.selecting) {
+                    } else if(plugin.active_actions.selecting && plugin.options.events.select) {
                         plugin.doSelections(e, $this);
                     }
                 }, 100);
@@ -607,6 +633,23 @@
                     $(plugin.$element).nextDay();
                 } else if(plugin.options.calendar_type == 'month') {
                     $(plugin.$element).nextMonth();
+                }
+            });
+            $('.pb-calendar a.pb-change-calendar-type').on('click' + '.' + plugin._name, function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                if($this.hasClass('week')) {
+                    $(plugin.$element).reload({
+                        calendar_type: 'week'
+                    });
+                } else if($this.hasClass('month')) {
+                    $(plugin.$element).reload({
+                        calendar_type: 'month'
+                    });
+                } else if($this.hasClass('day')) {
+                    $(plugin.$element).reload({
+                        calendar_type: 'day'
+                    });
                 }
             });
             // Prevent constant bashing when resizing
@@ -745,8 +788,8 @@
         },
 
 
-         doEntryMove: function($move_to_slot) {
-      
+        doEntryMove: function($move_to_slot) {
+
             if(!this.selections.entry && $move_to_slot) {
                 return;
             } else if(!$move_to_slot.hasClass('pb-skeleton')) {
@@ -784,7 +827,6 @@
                     end.add(diff, 'minutes');
                 }
             }
-
 
             entry.start = this._longFormat(start);
             entry.end = this._longFormat(end);
@@ -1034,7 +1076,7 @@
                 if(entry.split) {
                     $entry.attr('data-splitted', 1);
                 }
-                if(entry.has_resizer) {
+                if(entry.has_resizer && this.options.events.resize) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
                 // Set entry size
@@ -1044,15 +1086,15 @@
                     offset = $slots.width() / (o_len + 1);
                     $overlapping_entries.css('width', offset);
                     $entry.css('width', offset);
-                    // $overlapping_entries.each(function(index) {
-                    //     $(this).css('left', base_offset + offset * index);
-                    // });
                     offset = offset * o_len;
                 } else {
                     $entry.css('width', $slots.width());
                 }
+
                 // Set position
-                $entry.css('top', $slots.first().offset().top);
+                var top = $slots.first().offset().top;
+                top -= plugin.$element.offset().top;
+                $entry.css('top', top);
                 $entry.css('height', parseInt($slots.css('height')) * ($slots.length-1) );
                 $entry.css('left', base_offset + (offset));
                 $container.append($entry);
@@ -1117,13 +1159,13 @@
                 if(entry.split) {
                     $entry.attr('data-splitted', 1);
                 }
-                if(entry.has_resizer) {
+                if(entry.has_resizer && plugin.options.events.resize) {
                     $entry.append('<p href="#" class="pb-resizer"></p>');
                 }
                 if($overlapping_entries.length >= 3 && !entry.most_top) {
                     plugin.appendToReadMore($entry, $first_slot);
                 } else {
-                    var top = !entry.most_top ? 24 * ($overlapping_entries.length+1) : 24;
+                    var top = !entry.most_top ? 24 * ($overlapping_entries.length + 1) : 24;
                     $entry.css({
                         top: top,
                         width: ( $slots.length * 100 - 8 ) + '%'
@@ -1369,6 +1411,8 @@
             end.minutes(0);
             end.hours(0);
             var start = moment(entry.start);
+            start.locale(this.options.locale);
+
             start.seconds(0);
             start.minutes(0);
             start.hours(0);
@@ -1393,7 +1437,7 @@
             $entry.attr('data-to', moment(entry.end).format('X'));
 
             var display = entry.title;
-            $entry.attr('title', moment(entry.start).format('L'));
+            $entry.attr('title', start.format('L') + ' - ' + entry.title);
 
             $entry.html(display);
 
@@ -1462,7 +1506,6 @@
             var date_now = this.data.selected_day.format('l');
             var stamp_now = this.data.selected_day.format('X');
             var month_no_now = this.data.selected_day.format('M');
-
             var tmp = this.data.selected_day.clone();
             var $container = $('<table class="pb-main-table">');
 
@@ -1495,7 +1538,7 @@
                 }
 
                 // Add indicators for past and future times
-                if(times[t].format('l') != date_now && times[t].format('X') < stamp_now) {
+                if(times[t].format('X') < stamp_now) {
                     $cell.addClass('pb-past');
                 } else if(times[t].format('l') != date_now) {
                     $cell.addClass('pb-future');
@@ -1734,7 +1777,9 @@
             if(min_width) {
                 var options = $.extend({}, plugin.options, plugin.options.breakpoints[w]);
             } else {
-                var options = $.extend({}, plugin.initial_options);
+                plugin.options.calendar_type = plugin.initial_options.calendar_type;
+                plugin.options.entry_limit = plugin.initial_options.entry_limit;
+                var options = $.extend({}, plugin.options);
             }
             plugin.reload(options);
         },
